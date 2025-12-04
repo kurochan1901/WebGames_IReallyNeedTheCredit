@@ -9,4 +9,8 @@
 ![Stars](https://img.shields.io/github/stars/kurochan1901/WebGames_IReallyNeedTheCredit)  
 ![Language](https://img.shields.io/github/languages/top/kurochan1901/WebGames_IReallyNeedTheCredit)  
 
-
+## 開發日誌
+20251204  
+- 建立New Repository
+- 專題提案
+>*旅程的開始...*
