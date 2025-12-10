@@ -37,6 +37,14 @@ def ensure_schema():
 
 @app.route("/")
 def home():
+    #test db connection
+    '''
+    print("DB_PATH =", DB_PATH)
+    con = get_db()
+    rows = con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    print("TABLES:", [r["name"] for r in rows])
+    con.close()     
+    '''
     return render_template("home.html",
                            logged_in=bool(session.get("player_id")),
                            username=session.get("username"))
@@ -52,7 +60,7 @@ def login_submit():
 
     con = get_db()
     row = con.execute(
-        "SELECT id, username, password FROM User WHERE id=?",
+        "SELECT id, username, password FROM players WHERE username=?",
         (uname,)
     ).fetchone()
     con.close()
@@ -89,14 +97,15 @@ def register_submit():
     con = get_db()
     try:
         con.execute(
-            "INSERT INTO User (username, password) VALUES (?, ?)",
+            "INSERT INTO players (username, password) VALUES (?, ?)",
             (uname, pwd)    # 純文字密碼（僅練習用）
         )
         con.commit()
+        
     except sqlite3.IntegrityError:
         flash("此帳號已被註冊。", "error")
-        con.close()
         return redirect(url_for("register_form"))
+    
     finally:
         con.close()
 
