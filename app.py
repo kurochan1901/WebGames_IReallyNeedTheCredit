@@ -20,22 +20,20 @@ def get_db():
     con.row_factory = sqlite3.Row
     return con
 
-def ensure_schema_first_time():
-    if not os.path.exists(DB_PATH):
-        con = get_db()
-        con.execute("""
-        CREATE TABLE IF NOT EXISTS User (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT UNIQUE NOT NULL
-            CHECK (length(username) BETWEEN 1 AND 30)
-            CHECK (username GLOB '[0-9A-Za-z]*'),
-          password TEXT NOT NULL,  -- 純文字密碼（僅本機練習用）
-          created_at TEXT NOT NULL DEFAULT (datetime('now'))
-        );
-        """)
-        con.commit()
-        con.close()
-
+def ensure_schema():
+    con = get_db()
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS players (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL
+        CHECK (length(username) BETWEEN 1 AND 30)
+        CHECK (username GLOB '[0-9A-Za-z]*'),
+      password TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    """)
+    con.commit()
+    con.close()
 
 @app.route("/")
 def home():
@@ -54,7 +52,7 @@ def login_submit():
 
     con = get_db()
     row = con.execute(
-        "SELECT id, username, password FROM players WHERE username=?",
+        "SELECT id, username, password FROM User WHERE id=?",
         (uname,)
     ).fetchone()
     con.close()
@@ -91,7 +89,7 @@ def register_submit():
     con = get_db()
     try:
         con.execute(
-            "INSERT INTO players (username, password) VALUES (?, ?)",
+            "INSERT INTO User (username, password) VALUES (?, ?)",
             (uname, pwd)    # 純文字密碼（僅練習用）
         )
         con.commit()
@@ -119,5 +117,5 @@ def play_hub():
     return "（這裡之後放你的遊戲 Hub 頁面或導向 /games）"
 
 if __name__ == "__main__":
-    ensure_schema_first_time()
+    ensure_schema()
     app.run(debug=True)
