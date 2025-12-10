@@ -29,8 +29,12 @@
     <script>
       // 若是「查無帳號」類型，彈窗提醒
       (function(){
-        var li = document.querySelector('#flash li[data-cat="no_account"]');
-        if(li){ alert(li.textContent + "\\n點選「前往註冊」開始建立帳號。"); }
+        var liNo = document.querySelector('#flash li[data-cat="no_account"]');
+        if(liNo){ 
+          alert(li.textContent)
+          window.location.href = "{{ url_for('register_form') }}";
+          return;
+        }
       })();
     </script>
   {% endif %}
