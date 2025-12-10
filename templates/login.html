@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>登入</h2>
+  <form method="post" action="{{ url_for('login_submit') }}" class="vform">
+    <label>帳號</label>
+    <input name="username" required>
+    <label>密碼</label>
+    <input name="password" type="password" required>
+    <button type="submit">登入</button>
+    <a href="{{ url_for('register_form') }}" class="link">前往註冊</a>
+  </form>
+{% endblock %}

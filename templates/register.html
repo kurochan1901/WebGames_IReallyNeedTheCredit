@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>註冊</h2>
+  <form method="post" action="{{ url_for('register_submit') }}" class="vform">
+    <label>帳號（僅英數）</label>
+    <input name="username" pattern="[A-Za-z0-9]+" required>
+    <label>密碼（6–12 碼；至少 1 大寫與 1 數字）</label>
+    <input name="password" type="password" minlength="6" maxlength="12" required>
+    <button type="submit">建立帳號</button>
+    <a href="{{ url_for('login_form') }}" class="link">返回登入</a>
+  </form>
+  <p class="hint">允許的符號：!@#$%^&*()_ -+={}[];:,.?/</p>
+{% endblock %}

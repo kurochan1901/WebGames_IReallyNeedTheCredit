@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>首頁</h2>
+  <p>請先登入後再開始遊戲。</p>
+  <div class="actions">
+    {% if not session.get('player_id') %}
+      <a class="btn" href="{{ url_for('login_form') }}">登入／註冊</a>
+      <button class="btn" disabled title="請先登入">開始遊戲</button>
+    {% else %}
+      <a class="btn primary" href="{{ url_for('play_hub') }}">開始遊戲</a>
+      <form method="post" action="{{ url_for('logout') }}"><button>登出</button></form>
+    {% endif %}
+  </div>
+{% endblock %}
