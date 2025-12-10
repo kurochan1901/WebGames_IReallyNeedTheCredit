@@ -1,27 +1,58 @@
+/* 整體背景 */
+body {
+    background: #1C1A1D;
+    color: #E5D7B8;
+    font-family: "Cinzel", "Noto Sans TC", serif;
+}
+
+/* NAV 導覽列 */
+.nav {
+    background: #2A262B;
+    color: #E5D7B8;
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid #5A4A2A;
+}
+
+.nav a, .nav button {
+    color: #E5D7B8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav a:hover, .nav button:hover {
+    color: #C9A86A;
+}
+
 /* 整體布局：左右側欄 + 中央主視覺 */
 .layout-container {
     display: grid;
     grid-template-columns: 240px 1fr 240px; /* 左 / 中 / 右 */
-    height: 100vh;
-    background: #f5f5f5;
+    height: calc(100vh - 60px);
 }
 
 /* 左右欄位 */
 .side-panel {
+    background: #2F3E2C;
     padding: 20px;
-    background: #ffffff;
-    border-right: 1px solid #ddd;
+    border-right: 2px solid #5A4A2A;
     overflow-y: auto;
 }
 
 .right-panel {
     border-right: none;
-    border-left: 1px solid #ddd;
+    border-left: 2px solid #5A4A2A;
 }
 
 .side-panel h2 {
-    font-size: 20px;
-    margin-bottom: 12px;
+    color: #C9A86A;
+    border-bottom: 1px solid #5A4A2A;
+    padding-bottom: 4px;
+}
+
+.side-panel li {
+    margin: 6px 0;
 }
 
 /* 中央主視覺區 */
@@ -34,17 +65,18 @@
 
 /* 主視覺圖片預留區 */
 .hero-image-placeholder {
-    width: 480px;
-    height: 260px;
-    background: #ddd;
-    border-radius: 12px;
-    margin-bottom: 40px;
-    color: #444;
+    width: 520px;
+    height: 300px;
+    background: #2A262B;
+    border: 2px solid #5A4A2A;
+    border-radius: 10px;
+    color: #C9A86A;
     font-size: 22px;
+    text-align: center;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 40px;
 }
 
 /* 按鈕區 */
@@ -63,40 +95,56 @@
 /* 按鈕樣式 */
 .btn {
     padding: 12px 28px;
-    border-radius: 8px;
-    text-decoration: none;
+    border-radius: 6px;
+    border: 2px solid #5A4A2A;
+    background: #2A262B;
+    color: #E5D7B8;
     cursor: pointer;
+    text-decoration: none;
     font-size: 18px;
+    transition: 0.25s;
     display: inline-block;
 }
 
 .btn-primary {
-    background: #007bff;
-    color: #fff;
+    background: #5A4A2A;
+    color: #E5D7B8;
+}
+.btn-primary:hover {
+    background: #C9A86A;
+    color: #1C1A1D;
 }
 
+/* 次按鈕 */
 .btn-secondary {
-    background: #6c757d;
-    color: #fff;
+    background: #2A262B;
 }
 
+.btn-secondary:hover {
+    border-color: #C9A86A;
+    color: #C9A86A;
+}
+
+/* 禁用 */
 .btn-disabled {
-    background: #aaa;
-    color: #eee;
-    cursor: not-allowed;
+    background: #3A3A3A;
+    border-color: #2A2A2A;
+    color: #777;
 }
 
 /* 歡迎訊息 */
 .welcome {
     font-size: 20px;
     margin-bottom: 20px;
+    color: #C9A86A;
 }
 
 /* 廣告區預留 */
 .ad-box {
     width: 100%;
     height: 200px;
-    background: #eee;
+    background: #2A262B;
+    border: 2px solid #5A4A2A;
     border-radius: 10px;
     display: flex;
     align-items: center;
