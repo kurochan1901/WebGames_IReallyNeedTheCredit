@@ -10,19 +10,20 @@
   {% block extra_style %}
   <!-- 可以為不同頁面提供額外樣式 -->
   {% endblock %}
-  
+
 </head>
 <body>
   <header class="nav">
-    <a href="{{ url_for('home') }}">首頁</a>
-    {% if session.get('player_id') %}
-      <form method="post" action="{{ url_for('logout') }}" style="display:inline">
-        <button>登出（{{ session.get('username') }}）</button>
-      </form>
-    {% else %}
-      <a href="{{ url_for('login_form') }}">登入</a>
-      <a href="{{ url_for('register_form') }}">註冊</a>
-    {% endif %}
+    
+    <div class="user-info" id="user-info">
+      {% if session.get('player_id') %}
+        <span>{{ session.get('username') }}</span>
+        <button onclick="togglePopup()">顯示資料</button>
+      {% else %}
+        <button onclick="togglePopup()">請先登入</button>
+      {% endif %}
+    </div>
+  
   </header>
 
   {% with msgs = get_flashed_messages(with_categories=true) %}
