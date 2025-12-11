@@ -1,0 +1,57 @@
+/* 顯示在頁面左上角 */
+.user-info {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    color: #E5D7B8;
+    font-size: 16px;
+}
+
+.user-info button {
+    background: #2A262B;
+    color: #C9A86A;
+    border: 2px solid #5A4A2A;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.user-info button:hover {
+    background: #C9A86A;
+    color: #1C1A1D;
+}
+
+/* 彈出視窗樣式 */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2A262B;
+    padding: 20px;
+    border: 2px solid #5A4A2A;
+    border-radius: 8px;
+    color: #E5D7B8;
+    z-index: 9999;
+    width: 300px;
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.close-btn {
+    margin-top: 10px;
+    background: #5A4A2A;
+    color: #E5D7B8;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: #C9A86A;
+    color: #1C1A1D;
+}
