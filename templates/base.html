@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>WebGames</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+
+  {% block extra_style %}
+  <!-- 可以為不同頁面提供額外樣式 -->
+  {% endblock %}
+  
 </head>
 <body>
   <header class="nav">
