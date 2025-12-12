@@ -1,21 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script src="{{ url_for('static', filename='js/maingame.js') }}"></script>
 <div class="maingame-container">
   <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
-  <p>這裡是遊戲的主要介面。請選擇你的下一步行動：</p>
 
     <div class="status" id="player-status">
       <h3>玩家狀態</h3>
-      <p>施工中...</p>
+      <ul>
+        <li>血量：<span id="playerHP">-</span></li>
+        <li>魔力：<span id="playerMP">-</span></li>
+        <li>暈眩：<span id="playerStun">-</span></li>
+      </ul>
+    </div>
 
+    <div class="status" id="monster-status">
+      <h3>怪物狀態</h3>
+      <ul>
+        <li>名稱：<span id="monsterName">-</span></li>
+        <li>血量：<span id="monsterHP">-</span></li>
+      </ul>
     </div>
 
     <div class="actions" id="game-actions">
       <h3>可執行的動作</h3>
-        <button class="btn" id="attackBtn">攻擊</button>
+        <button class="btn" id="slashBtn">揮砍</button>
+        <button class="btn" id="strikeBtn">重擊</button>
+        <button class="btn" id="fireballBtn">火球術</button>
         <button class="btn" id="healBtn">治療</button>
     </div>
-    
+
+    <div class="log" id="game-log">
+      <h3>遊戲記錄</h3>
+      <div id="log-entries">
+        <!-- 遊戲記錄將顯示在此處 -->
+      </div>
+       
 </div>
+
+<script src="{{ url_for('static', filename='js/maingame/js')}}"> </script>
 {% endblock %}
