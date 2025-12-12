@@ -6,16 +6,20 @@ body {
 }
 
 /* NAV 導覽列 */
-.nav {
-    background: #2A262B;
-    color: #E5D7B8;
+header.nav {
+    position:relative;
+    height: 40px;
     padding: 12px 20px;
+    background: #2A262B;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #E5D7B8;
     gap: 20px;
     border-bottom: 2px solid #5A4A2A;
 }
 
-.nav a, .nav button {
+header.nav a, .nav button {
     color: #E5D7B8;
     text-decoration: none;
     font-weight: bold;

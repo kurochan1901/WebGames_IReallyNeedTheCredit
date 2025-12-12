@@ -2,7 +2,8 @@
 .user-info {
     position: absolute;
     left: 20px;
-    top: 20px;
+    top: 50%;
+    transform: translateY(-50%);  /* 確保按鈕在垂直居中 */
     color: #E5D7B8;
     font-size: 16px;
 }
@@ -14,6 +15,7 @@
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 16px;
 }
 
 .user-info button:hover {
@@ -23,35 +25,73 @@
 
 /* 彈出視窗樣式 */
 .popup {
-    display: none;
+    display: none;  /* 初始隱藏 */
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #2A262B;
-    padding: 20px;
+    padding: 40px;  /* 增加內邊距，讓視窗顯得更大 */
     border: 2px solid #5A4A2A;
-    border-radius: 8px;
+    border-radius: 12px;
     color: #E5D7B8;
-    z-index: 9999;
-    width: 300px;
+    z-index: 9999;  /* 確保在最上層 */
+    width: 400px;  /* 放大視窗寬度 */
+    max-width: 90vw;  /* 最大寬度限制，適應手機 */
+    box-sizing: border-box;
 }
 
 .popup-content {
     text-align: center;
+    position: relative;
 }
-
 .close-btn {
-    margin-top: 10px;
+    margin-top: 20px;
     background: #5A4A2A;
     color: #E5D7B8;
     border: none;
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;  /* 按鈕字體縮小 */
 }
 
 .close-btn:hover {
     background: #C9A86A;
     color: #1C1A1D;
+}
+
+/* 彈出視窗按鈕縮小並移至右下角 */
+.popup .btn-small {
+    font-size: 14px;  /* 縮小字體 */
+    padding: 6px 12px;  /* 減少內邊距 */
+    border-radius: 6px;  /* 圓角效果 */
+}
+
+.popup .btn-small-close, .popup .btn-small-logout {
+    position: relative;
+    right: 20px;  /* 距離右邊 20px */
+    bottom: 20px;  /* 距離底部 20px */
+    margin-left: 10px;
+}
+
+/* 使這些按鈕的外觀不受其他樣式影響，依照需要進行調整 */
+.popup .btn-small-close {
+    background-color: #5A4A2A;  /* 自定義背景色 */
+    color: #E5D7B8;  /* 按鈕文字顏色 */
+}
+
+.popup .btn-small-close:hover {
+    background-color: #C9A86A;  /* 按鈕 hover 顏色 */
+    color: #1C1A1D;  /* hover 時文字顏色 */
+}
+
+.popup .btn-small-logout {
+    background-color: #C9A86A;  /* 自定義背景色 */
+    color: #1C1A1D;  /* 按鈕文字顏色 */
+}
+
+.popup .btn-small-logout:hover {
+    background-color: #5A4A2A;  /* 按鈕 hover 顏色 */
+    color: #E5D7B8;  /* hover 時文字顏色 */
 }

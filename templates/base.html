@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='userInfo.css') }}">
+  <script src="{{ url_for('static', filename='Popup.js') }}" defer></script>
 
   {% block extra_style %}
   <!-- 可以為不同頁面提供額外樣式 -->
@@ -19,9 +20,9 @@
     <div class="user-info" id="user-info">
       {% if session.get('player_id') %}
         <span>{{ session.get('username') }}</span>
-        <button onclick="togglePopup()">顯示資料</button>
+        <button onclick="togglePopup()">冒險者手冊</button>
       {% else %}
-        <button onclick="togglePopup()">請先登入</button>
+        <button onclick="togglePopup()">神秘的旅人</button>
       {% endif %}
     </div>
   
@@ -37,15 +38,15 @@
         <p>遊玩次數：{{ session.get('level') }}</p>
 
         <form method="POST" action="{{ url_for('logout') }}">
-          <button type="submit" class="btn btn-secondary">登出</button>
+          <button type="submit" class="btn btn-small btn-small-logout">登出</button>
         </form>
 
       {% else %}
         <h3>旅人啊，我還不認識你...</h3>
-        <a href="{{ url_for('login_form') }}" class="btn btn-primary">前往登入</a>
+        <a href="{{ url_for('login_form') }}" class="btn btn-small btn-small-logout">前往登入</a>
 
         {% endif %}
-        <button class="btn btn-close" onclick="closePopup()">關閉</button>
+        <button class="btn btn-small btn-small-close" onclick="closePopup()">關閉</button>
     </div>
   </div>
 
