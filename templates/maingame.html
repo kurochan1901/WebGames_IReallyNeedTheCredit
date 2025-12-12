@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="maingame-container">
+  <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
+  <p>這裡是遊戲的主要介面。請選擇你的下一步行動：</p>
+
+    <div class="status" id="player-status">
+      <h3>玩家狀態</h3>
+      <ul>
+        <li>等級：{{ session.get('level') }}</li>
+        <li>經驗值：{{ session.get('experience') }}</li>
+        <li>金幣：{{ session.get('gold') }}</li>
+      </ul>
+    </div>
+
+    <div class="actions" id="game-actions">
+      <h3>可執行的動作</h3>
+        <button class="btn" id="attackBtn">攻擊</button>
+        <button class="btn" id="healBtn">治療</button>
+    </div>
+    
+</div>
+{% endblock %}

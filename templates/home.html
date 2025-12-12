@@ -40,7 +40,7 @@
         <!-- 已登入時 -->
         <p class="welcome">歡迎回來，{{ session.get('username') }}！</p>
 
-        <a class="btn btn-primary" href="{{ url_for('play_hub') }}">開始遊戲</a>
+        <a class="btn btn-primary" href="{{ url_for('main_game') }}">開始遊戲</a>
 
         <form method="post" action="{{ url_for('logout') }}" style="margin-top: 12px;">
           <button class="btn btn-secondary" type="submit">登出</button>

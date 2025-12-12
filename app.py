@@ -123,7 +123,7 @@ def play_hub():
     if not session.get("player_id"):
         flash("請先登入再開始遊戲。", "error")
         return redirect(url_for("home"))
-    return "（這裡之後放你的遊戲 Hub 頁面或導向 /games）"
+    return render_template("maingame.html"),
 
 if __name__ == "__main__":
     ensure_schema()
