@@ -44,7 +44,9 @@
 .popup-content {
     text-align: center;
     position: relative;
+    padding-bottom: 50px;  /* 為按鈕留出空間 */
 }
+
 .close-btn {
     margin-top: 20px;
     background: #5A4A2A;
@@ -67,31 +69,35 @@
     padding: 6px 12px;  /* 減少內邊距 */
     border-radius: 6px;  /* 圓角效果 */
 }
-
-.popup .btn-small-close, .popup .btn-small-logout {
-    position: relative;
-    right: 20px;  /* 距離右邊 20px */
-    bottom: 20px;  /* 距離底部 20px */
-    margin-left: 10px;
+/* 有問題，尚未測試 */
+.popup .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;  /* 按鈕之間的間距 */
+    margin-top: 20px;
+    position: absolute;  /* 按鈕位置固定 */
+    bottom: 20px;  /* 位於視窗底部 */
+    left: 50%;
 }
 
 /* 使這些按鈕的外觀不受其他樣式影響，依照需要進行調整 */
 .popup .btn-small-close {
-    background-color: #5A4A2A;  /* 自定義背景色 */
-    color: #E5D7B8;  /* 按鈕文字顏色 */
+    background: #2A262B;
+    color: #E5D7B8; 
 }
 
 .popup .btn-small-close:hover {
-    background-color: #C9A86A;  /* 按鈕 hover 顏色 */
-    color: #1C1A1D;  /* hover 時文字顏色 */
+    border-color: #C9A86A;
+    color: #C9A86A;
 }
 
 .popup .btn-small-logout {
-    background-color: #C9A86A;  /* 自定義背景色 */
-    color: #1C1A1D;  /* 按鈕文字顏色 */
+    background-color: #C9A86A;  
+    color: #1C1A1D;  
+    border: none;
 }
 
 .popup .btn-small-logout:hover {
-    background-color: #5A4A2A;  /* 按鈕 hover 顏色 */
-    color: #E5D7B8;  /* hover 時文字顏色 */
+    background-color: #5A4A2A; 
+    color: #E5D7B8; 
 }
