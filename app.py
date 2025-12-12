@@ -120,11 +120,8 @@ def logout():
 
 @app.route("/main_game")
 def main_game():
-    print("進入 main_game 路由")
     if 'player_id' not in session:
-        print("玩家未登入，跳轉到登入頁面")
         return redirect(url_for('login_form'))  # 若未登入，重定向至登入頁面
-    print("玩家已登入，渲染 maingame.html")
     return render_template('maingame.html')
 
 if __name__ == "__main__":
