@@ -39,3 +39,22 @@ class Attacker {
         this.mana = Math.min(100, this.mana + 10);
     }
 }
+
+class Monster {
+    constructor() {
+        this.name = "Wild Beast";
+        this.health = 150;
+    }
+
+    claw() {
+        return {name: "Claw", damage: 10};
+    }
+
+    bite() {
+        return {name: "Bite", damage: 15};
+    }
+
+    stun() {
+        return {name: "Stun", damage: 0, stun: 2};
+    }
+}
