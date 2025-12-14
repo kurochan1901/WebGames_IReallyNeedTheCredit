@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script src="{{ url_for('static', filename='js/maingame.js') }}"></script>
 <div class="maingame-container">
   <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
 
@@ -32,11 +31,12 @@
 
     <div class="log" id="game-log">
       <h3>遊戲記錄</h3>
-      <div id="log-entries">
+      <div id="logBox">
         <!-- 遊戲記錄將顯示在此處 -->
+        <button class="btn" id="nextLogBtn" style="display:none;">下一句</button>
       </div>
        
 </div>
 
-<script src="{{ url_for('static', filename='js/maingame/js')}}"> </script>
+<script src="{{ url_for('static', filename='maingame.js')}}"> </script>
 {% endblock %}
