@@ -1,6 +1,7 @@
 # WebGames_IReallyNeedTheCredit
 > 本專案為《114-1 Department Computer Network and Programming》期末專題。  
 > 課堂成果總倉庫：**114-1_Department-Computer-Network-and-Programming**。
+##### Vibe Coding
 <!-- 換成你的使用者名稱 -->
 <!-- 專案主 README 推薦 badge 組合 -->
 [![Course Repo](https://img.shields.io/badge/Repo-114--1_Department--Computer--Network--and--Programming-4B8BBE)](https://github.com/kurochan1901/114-1_Department-Computer-Network-and-Programming)  
@@ -27,3 +28,6 @@
 - 試圖將遊戲掛到伺服器上但失敗了
 - 新增主遊戲頁面
 >*助教救我...*
+20251215
+- 主遊戲架構完成
+- 繼續試圖將遊戲掛到伺服器上

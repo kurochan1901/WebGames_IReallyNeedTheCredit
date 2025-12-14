@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="__debug_marker__" style="background:yellow; padding:6px;">
+<!--div id="__debug_marker__" style="background:yellow; padding:6px;">
   DEBUG MARKER: maingame.html from Flask
-</div>
+</div-->
 
 <div class="maingame-container">
   <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
   <!--debug-->
-  <!--
-    <p style="color:red;font-weight:bold;">[DEBUG] maingame.html UPDATED</p>
-  -->
+  <!-- p style="color:red;font-weight:bold;">[DEBUG] maingame.html UPDATED</p -->
 
 
     <div class="status" id="player-status">
