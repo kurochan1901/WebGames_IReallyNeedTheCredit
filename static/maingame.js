@@ -62,12 +62,44 @@ function battle() {
 
     const $ = (id) => document.getElementById(id);
 
-    function log(msg) {
-        const box = $("logBox");
-        const p = document.createElement("div");
-        p.textContent = msg;
-        box.appendChild(p);
-        box.scrollTop = box.scrollHeight;
+    //訊息記錄
+    let logQueue = [];
+    let waitingNext = false;
+
+    function showLine(line) {
+        $("logBox").textContent += line + "\n";
+    }
+    function enqueue(lines) {
+        logQueue.push(...lines);
+        playNext();
+    }
+    function playNext() {
+        if (waitingNext) return;
+        
+        if (logQueue.length === 0) {
+            $("nextLogBtn").style.display = "none";
+            setButtonEnabled(true);
+            return;
+        }
+
+        waitingNext = true;
+        const line = logQueue.shift();
+        showLine(line);
+
+        $("nextLogBtn").style.display = "inline-block";
+    }
+
+    $("nextLogBtn").onclick = () => {
+        waitingNext = false;
+        playNext();
+    };
+
+    //按鈕lock
+    function setButtonEnabled(enabled) {
+        $("slashBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["slash"] > 0);
+        $("fireballBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
+        $("strikeBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
+        $("healBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
     }
 
     function render() {
@@ -82,6 +114,8 @@ function battle() {
         $("fireballBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
         $("strikeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
         $("healBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
+    
+        setButtonEnabled(true);
     }
 
     function endGame(winnerName) {
