@@ -120,7 +120,7 @@ function battle() {
 
     function endGame(winnerName) {
         gameOver = true;
-        log(`戰鬥結束！${winnerName} 勝利！`);
+        lines.push(`戰鬥結束！${winnerName} 勝利！`);
         render();
     }
 
@@ -132,23 +132,23 @@ function battle() {
         }
     }
 
-    function monsterTurn() {
+    function monsterTurnCollect(lines) {
         if (gameOver) return;
 
         const skills = [monster.claw(), monster.bite(), monster.stun()];
         const monsterSkill = skills[Math.floor(Math.random() * skills.length)];
-        log(`${monster.name} 使用了 ${monsterSkill.name}！`);
+        lines.push(`${monster.name} 使用了 ${monsterSkill.name}！`);
         
         //怪物傷害
         if (monsterSkill.damage) {
             attacker.health -= monsterSkill.damage;
-            log(`${attacker.name} 受到 ${monsterSkill.damage} 點傷害！`);
+            lines.push(`${attacker.name} 受到 ${monsterSkill.damage} 點傷害！`);
         }
         
         //暈眩
         if (monsterSkill.stun) {
             attacker.stunDuration = monsterSkill.stun;
-            log(`${attacker.name} 被眩暈了 ${monsterSkill.stun} 回合！`);
+            lines.push(`${attacker.name} 被眩暈了 ${monsterSkill.stun} 回合！`);
         }
 
         if (attacker.health <= 0) {
@@ -160,23 +160,30 @@ function battle() {
         attacker.restoreMana();
         tickCooldowns();
 
-        log(`--- 第 ${roundCount} 回合 ---`);
-        render();
+        lines.push(`--- 第 ${roundCount} 回合 ---`);
     }
 
     function playerUse(skillFn) {
         if (gameOver) return;
 
+        setButtonEnabled(false);
+        const lines = [];
+
         if (attacker.stunDuration > 0) {
-            log(`${attacker.name} 被眩暈，無法行動！`);
+            lines.push(`${attacker.name} 被眩暈，無法行動！`);
             attacker.stunDuration -= 1;
+
+            monsterTurnCollect(lines);
+            enqueue(lines);
             render();
-            return monsterTurn();
+            return;
         }
 
         const attackSkill = skillFn();
         if (!attackSkill) {
-            log(`${attacker.name} 無法使用該技能！`);
+            lines.push(`${attacker.name} 無法使用該技能！`);
+            enqueue(lines);
+            setButtonEnabled(true);
             render();
             return;
         }
@@ -184,14 +191,21 @@ function battle() {
         //玩家傷害
         if (attackSkill.damage) {
             monster.health -= attackSkill.damage;
-            log(`${attacker.name} 使用了 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
-                if (monster.health <= 0) return endGame(attacker.name);
+            lines.push(`${attacker.name} 使用了 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
+            if (monster.health <= 0) {
+                gameOver = true;
+                lines.push(`${attacker.name} 勝利！`);
+                enqueue(lines);
+                render();
+                return;
+            }
+                    
         }
 
         //玩家回復
         if (attackSkill.heal) {
             attacker.health = Math.min(100, attacker.health + attackSkill.heal);
-            log(`${attacker.name} 使用了 ${attackSkill.name}，恢復 ${attackSkill.heal} 點生命！`);
+            lines.push(`${attacker.name} 使用了 ${attackSkill.name}，恢復 ${attackSkill.heal} 點生命！`);
         }
 
         //設置冷卻
@@ -199,8 +213,9 @@ function battle() {
             attacker.cooldowns[attackSkill.name.toLowerCase().replace(" ", "_")] = attackSkill.cooldown;
         }
 
+        monsterTurnCollect(lines);
+        enqueue(lines);
         render();
-        monsterTurn();
     }
 
     //啟動遊戲
@@ -209,12 +224,12 @@ function battle() {
         attacker = new Attacker(playerName);
         monster = new Monster();
 
-        log(`戰鬥開始！${attacker.name} VS ${monster.name}`);
+        lines.push(`戰鬥開始！${attacker.name} VS ${monster.name}`);
         roundCount = 1;
         gameOver = false;
 
         $("logBox").textContent = "";
-        log(`--- 第 ${roundCount} 回合 ---`);
+        lines.push(`--- 第 ${roundCount} 回合 ---`);
         render();
 
         $("slashBtn").onclick = () => playerUse(() => attacker.slash());
