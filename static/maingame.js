@@ -8,11 +8,11 @@ class Attacker {
     }
 
     slash() {
-        return {name: "Slash", damage: 10, manaCost: 10, cooldown: 0};
+        return {name: "Slash", damage: 10, manaCost: 0, cooldown: 0};
     }
 
     fireball() {
-        if (this.mana < 20 || (this.cooldowns["Fireball"] > 0)) {
+        if (this.mana < 20 || (this.cooldowns["fireball"] > 0)) {
             return null;  // 無法施放火球術
         }
         this.mana -= 20;
@@ -46,99 +46,61 @@ class Monster {
         this.health = 150;
     }
 
-    claw() {
-        return {name: "Claw", damage: 10};
-    }
+    claw() { return {name: "Claw", damage: 10};}
 
-    bite() {
-        return {name: "Bite", damage: 15};
-    }
+    bite() { return {name: "Bite", damage: 15};}
 
-    stun() {
-        return {name: "Stun", damage: 0, stun: 2};
-    }
+    stun() { return {name: "Stun", damage: 0, stun: 2};}
 }
 
 function battle() {
-    let attackerName = prompt("請輸入攻擊者名字: ");
-    let attacker = new Attacker(attackerName);
-    let monster = new Monster();
+    let attacker = null;
+    let monster = null;
     let roundCount = 1;
+    let gameOver = false;
 
-    while (attacker.health > 0 && monster.health > 0) {
-        alert(`\n---\n回合 ${roundCount}\n${attacker.name} - 血量: ${attacker.health}, 魔力: ${attacker.mana}`);
-        alert(`${monster.name} - 血量: ${monster.health}`);
+    const $ = (id) => document.getElementById(id);
 
-        let availableSkills = [];
-        if (attacker.cooldowns["slash"] === undefined || attacker.cooldowns["slash"] === 0) availableSkills.push("Slash");
-        if (attacker.cooldowns["fireball"] === undefined || attacker.cooldowns["fireball"] === 0) availableSkills.push("Fireball");
-        if (attacker.cooldowns["power_strike"] === undefined || attacker.cooldowns["power_strike"] === 0) availableSkills.push("Power Strike");
-        if (attacker.cooldowns["heal"] === undefined || attacker.cooldowns["heal"] === 0) availableSkills.push("Heal");
+    function log(msg) {
+        const box = $("logBox");
+        const p = document.createElement("div");
+        p.textContent = msg;
+        box.appendChild(p);
+        box.scrollTop = box.scrollHeight;
+    }
 
-        alert(`可用技能: ${availableSkills.join(", ")}`);
+    function render() {
+        $("playerHP").textContent = attacker.health;
+        $("playerMP").textContent = attacker.mana;
+        $("playerStun").textContent = attacker.stunDuration > 0 ? attacker.stunDuration : "無";
 
-        let attackSkill = null;
-        if (attacker.stunDuration > 0) {
-            alert(`${attacker.name} 被暈眩，無法行動！`);
-            attacker.stunDuration -= 1;
-        } else {
-            let skillChoice = prompt("選擇技能: 1. Slash 2. Fireball 3. Power Strike 4. Heal");
-            switch (skillChoice) {
-                case "1":
-                    attackSkill = attacker.slash();
-                    break;
-                case "2":
-                    attackSkill = attacker.fireball();
-                    break;
-                case "3":
-                    attackSkill = attacker.powerStrike();
-                    break;
-                case "4":
-                    attackSkill = attacker.heal();
-                    break;
-            }
-        }
+        $("monsterName").textContent = monster.name;
+        $("monsterHP").textContent = monster.health;
 
-        if (attackSkill) {
-            if (attackSkill.damage) {
-                monster.health -= attackSkill.damage;
-                alert(`${attacker.name} 使用 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
-            } else if (attackSkill.heal) {
-                attacker.health = Math.min(100, attacker.health + attackSkill.heal);
-                alert(`${attacker.name} 使用 ${attackSkill.name}，恢復 ${attackSkill.heal} 點血量！`);
-            }
+        $("slashBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["slash"] > 0);
+        $("fireballBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
+        $("strikeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
+        $("healBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
+    }
 
-            if (attackSkill.cooldown > 0) {
-                attacker.cooldowns[attackSkill.name.toLowerCase()] = attackSkill.cooldown;
-            }
-        }
-        // 怪物回合
-        let monsterSkill = [monster.claw(), monster.bite(), monster.stun()][Math.floor(Math.random() * 3)];
-        alert(`${monster.name} 使用 ${monsterSkill.name}！`);
-        if (monsterSkill.damage) {
-            attacker.health -= monsterSkill.damage;
-            alert(`${monster.name} 造成 ${monsterSkill.damage} 點傷害！`);
-        }
-        if (monsterSkill.stun) {
-            attacker.stunDuration = monsterSkill.stun;
-            alert(`${attacker.name} 被暈眩 ${monsterSkill.stun} 回合！`);
-        }
+    function endGame(winnerName) {
+        gameOver = true;
+        log(`戰鬥結束！${winnerName} 勝利！`);
+        render();
+    }
 
-        roundCount += 1;
-        attacker.restoreMana();
-
-        // 更新冷卻時間
-        for (let skill in attacker.cooldowns) {
-            if (attacker.cooldowns[skill] > 1) {
-                attacker.cooldowns[skill] -= 1;
-            } else {
-                delete attacker.cooldowns[skill];
-            }
+    function tickCooldowns() {
+        for (const key of Object.keys(attacker.cooldowns)) {
+            if (attacker.cooldowns[key] > 1) attacker.cooldowns[key] -= 1;
+            else delete attacker.cooldowns[key];
         }
     }
 
-    let winner = attacker.health > 0 ? attacker.name : monster.name;
-    alert(`戰鬥結束！${winner} 勝利！`);
-}
+    function monsterTurn() {
+        if (gameOver) return;
+
+
+
+
 
 battle();
