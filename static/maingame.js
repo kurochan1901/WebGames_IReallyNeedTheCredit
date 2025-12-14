@@ -62,12 +62,20 @@ function battle() {
 
     const $ = (id) => document.getElementById(id);
 
+    //防呆
+    function must(id) {
+        const el = document.getElementById(id); 
+        if (!el) console.error("Missing element:", id);
+        return el;
+    }
+
+
     //訊息記錄
     let logQueue = [];
     let waitingNext = false;
 
     function showLine(line) {
-        $("logBox").textContent += line + "\n";
+        $("logBox").textContent = line;
     }
     function enqueue(lines) {
         logQueue.push(...lines);
@@ -114,13 +122,11 @@ function battle() {
         $("fireballBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
         $("strikeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
         $("healBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
-    
-        setButtonEnabled(true);
-    }
+        }
 
     function endGame(winnerName) {
         gameOver = true;
-        lines.push(`戰鬥結束！${winnerName} 勝利！`);
+        enqueue([`戰鬥結束！${winnerName} 勝利！`]);        
         render();
     }
 
@@ -220,16 +226,29 @@ function battle() {
 
     //啟動遊戲
     function startGame() {
-        const playerName ="player1"; // 可擴展為輸入名稱
+        //debug
+        must('logBox');
+        must('nextLogBtn');
+        must('slashBtn');
+        must('fireballBtn');
+        must('strikeBtn');
+        must('healBtn');
+        //debug end
+
+        const playerName = 
+            document.getElementById("playerName")?.dataset.username || "player1";
         attacker = new Attacker(playerName);
         monster = new Monster();
 
-        lines.push(`戰鬥開始！${attacker.name} VS ${monster.name}`);
         roundCount = 1;
         gameOver = false;
 
         $("logBox").textContent = "";
-        lines.push(`--- 第 ${roundCount} 回合 ---`);
+        logQueue = [];
+        waitingNext = false;
+
+        enqueue([
+            `戰鬥開始！${attacker.name}VS ${monster.name}`,`--- 第 ${roundCount} 回合 ---`]);
         render();
 
         $("slashBtn").onclick = () => playerUse(() => attacker.slash());

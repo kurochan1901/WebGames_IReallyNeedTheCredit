@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div id="__debug_marker__" style="background:yellow; padding:6px;">
+  DEBUG MARKER: maingame.html from Flask
+</div>
+
 <div class="maingame-container">
   <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
+  <!--debug-->
+  <!--
+    <p style="color:red;font-weight:bold;">[DEBUG] maingame.html UPDATED</p>
+  -->
+
 
     <div class="status" id="player-status">
       <h3>玩家狀態</h3>
@@ -31,12 +40,17 @@
 
     <div class="log" id="game-log">
       <h3>遊戲記錄</h3>
-      <div id="logBox">
-        <!-- 遊戲記錄將顯示在此處 -->
-        <button class="btn" id="nextLogBtn" style="display:none;">下一句</button>
-      </div>
+
+      <span id="playerName" data-username="{{ session.get('username') }}"></span>
+
+      <div id="logBox"> </div>
+      
+      <!--按鈕放外面避免被文字刷新清掉-->
+      <button class="btn" id="nextLogBtn" style="display:none;">下一句</button>
+    </div>
        
 </div>
 
 <script src="{{ url_for('static', filename='maingame.js')}}"> </script>
+
 {% endblock %}
