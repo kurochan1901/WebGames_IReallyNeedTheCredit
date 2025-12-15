@@ -6,13 +6,28 @@
 
   <!-- 左側欄：排行榜（暫填資料） -->
   <aside class="side-panel left-panel">
-    <h2>排行榜</h2>
+    <h2>
+      <a href="{{ url_for('leaderboard') }}" style="text-decoration: none; color:inherit;">
+        排行榜
+      </a>
+    </h2>
+    
+    <!-- 改用 /api/leaderboard -->
     <ul>
-      <li>1. 玩家A - 9999</li>
-      <li>2. 玩家B - 8200</li>
-      <li>3. 玩家C - 7900</li>
+      {% for r in recent_records %}
+      <li>
+        {{loop.index}}.
+        {{r["username"]}} 
+        - {{"勝利" if r["winner"] == "player" else "失敗"}}
+        - {{r["rounds"]}} 回合
+        <small>({{r["played_at"]}})</small>
+      </li>
+      {% else %}
+      <li>目前還沒有任何遊玩紀錄</li>
+      {% endfor %}
     </ul>
-    <!-- 之後可改用 /api/leaderboard -->
+
+    <a class="btn" href="{{ url_for('leaderboard') }}">查看完整排行榜</a>
   </aside>
 
   <!-- 中央主視覺＋按鈕 -->
