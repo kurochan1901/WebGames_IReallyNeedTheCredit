@@ -69,7 +69,19 @@ def home():
     print("TABLES:", [r["name"] for r in rows])
     con.close()     
     '''
+    con = get_db()
+    try:
+        recent_records = con.execute("""
+            SELECT username, winner, rounds, played_at
+            FROM game_records
+            ORDER BY datetime(played_at) DESC
+            LIMIT 5
+        """).fetchall()
+    finally:
+        con.close()
+    
     return render_template("home.html",
+                           recent_records=recent_records,
                            logged_in=bool(session.get("player_id")),
                            username=session.get("username"))
 
