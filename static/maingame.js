@@ -74,37 +74,45 @@ function battle() {
     }
 
 
-    //訊息記錄
-    let logQueue = [];
-    let waitingNext = false;
+    //訊息記錄(改成逐段顯示)
+    let blockQueue = [];
+    let showingBlock = false;
 
-    function showLine(line) {
-        $("logBox").textContent = line;
-    }
-    function enqueue(lines) {
-        logQueue.push(...lines);
-        playNext();
-    }
-    function playNext() {
-        if (waitingNext) return;
-        
-        if (logQueue.length === 0) {
-            $("nextLogBtn").style.display = "none";
-            setButtonEnabled(true);
-            return;
-        }
-
-        waitingNext = true;
-        const line = logQueue.shift();
-        showLine(line);
-
+    function showBlock(lines) {
+        // 讓 logBox 一次顯示多行（用 \n）
+        $("logBox").textContent = lines.join("\n");
         $("nextLogBtn").style.display = "inline-block";
+        // 最後一段時，提示「繼續」比較像推進回合
+        $("nextLogBtn").textContent = blockQueue.length > 0 ? "下一段" : "繼續";
+    }
+
+    function enqueueBlock(lines) {
+        if (!Array.isArray(lines)) lines = [String(lines)];
+        blockQueue.push(lines);
+
+        // 若沒有正在顯示的區塊，立即顯示第一段
+        if (!showingBlock) {
+            showingBlock = true;
+            setButtonEnabled(false);
+            showBlock(blockQueue.shift());
+        }
+    
+    }
+
+    function finishBlocksAndContinue() {
+        showingBlock = false;
+        $("nextLogBtn").style.display = "none";
+        beginPlayerTurn(); // 開始玩家回合(--測試: 進暈眩卡死?)
     }
 
     $("nextLogBtn").onclick = () => {
-        waitingNext = false;
-        playNext();
+        if (blockQueue.length > 0) {
+            showBlock(blockQueue.shift());
+        } else {
+            finishBlocksAndContinue();
+        }
     };
+
 
     //按鈕lock
     function setButtonEnabled(enabled) {
@@ -155,7 +163,7 @@ function battle() {
             ];
         }
 
-        enqueue(lines);
+        enqueueBlock(lines);
         render();
     }
 
@@ -177,9 +185,10 @@ function battle() {
         
         //怪物傷害
         if (monsterSkill.damage) {
-            if (typeof monsterSkill.damage === "number" && monsterSkill.damage > 0)
-            attacker.health -= monsterSkill.damage;
-            lines.push(`${attacker.name} 受到 ${monsterSkill.damage} 點傷害！`);
+            if (typeof monsterSkill.damage === "number" && monsterSkill.damage > 0){
+                attacker.health -= monsterSkill.damage;
+                lines.push(`${attacker.name} 受到 ${monsterSkill.damage} 點傷害！`);
+            }
         }
         
         //暈眩
@@ -201,26 +210,39 @@ function battle() {
         lines.push(`--- 第 ${roundCount} 回合 ---`);
     }
 
+    //開始玩家回合
+    function beginPlayerTurn() {
+        if (gameOver) {
+            setButtonEnabled(false);
+            return;
+        }
+
+    // 若玩家暈眩：自動跳過玩家回合（不需要點技能）
+        if (attacker.stunDuration > 0) {
+            const lines = [];
+            lines.push(`${attacker.name} 過於震驚，無法行動！`);
+            attacker.stunDuration -= 1;
+
+            monsterTurnCollect(lines); // 加怪物回合 + 回合結算
+            render();
+            enqueueBlock(lines);       // 變成一段顯示，按一次 Next 繼續
+            return;
+        }
+
+        render();
+        setButtonEnabled(true);
+    }
+
     function playerUse(skillFn) {
         if (gameOver) return;
 
         setButtonEnabled(false);
         const lines = [];
 
-        if (attacker.stunDuration > 0) {
-            lines.push(`${attacker.name} 被眩暈，無法行動！`);
-            attacker.stunDuration -= 1;
-
-            monsterTurnCollect(lines);
-            enqueue(lines);
-            render();
-            return;
-        }
-
         const attackSkill = skillFn();
         if (!attackSkill) {
             lines.push(`${attacker.name} 無法使用該技能！`);
-            enqueue(lines);
+            enqueueBlock(lines);
             setButtonEnabled(true);
             render();
             return;
@@ -228,14 +250,13 @@ function battle() {
 
         //玩家傷害
         if (attackSkill.damage) {
-            if (typeof attackSkill.damage === "number" && attackSkill.damage > 0)
-            monster.health -= attackSkill.damage;
-            lines.push(`${attacker.name} 使用了 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
+            if (typeof attackSkill.damage === "number" && attackSkill.damage > 0){
+                monster.health -= attackSkill.damage;
+                lines.push(`${attacker.name} 使用了 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
+            }
+
             if (monster.health <= 0) {
-                gameOver = true;
-                lines.push(`${attacker.name} 勝利！`);
-                enqueue(lines);
-                render();
+                endGame(attacker.name);
                 return;
             }
                     
@@ -253,9 +274,10 @@ function battle() {
         }
 
         monsterTurnCollect(lines);
-        enqueue(lines);
+        enqueueBlock(lines);
         render();
     }
+
 
     //啟動遊戲
     function startGame() {
@@ -277,10 +299,11 @@ function battle() {
         gameOver = false;
 
         $("logBox").textContent = "";
-        logQueue = [];
-        waitingNext = false;
+        blockQueue= [];
+        showingBlock = false;
+        $("nextLogBtn").style.display = "none";
 
-        enqueue([
+        enqueueBlock([
             `戰鬥開始！${attacker.name}VS ${monster.name}`,`--- 第 ${roundCount} 回合 ---`]);
         render();
 

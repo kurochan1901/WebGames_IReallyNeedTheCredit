@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style src="{{ url_for('static', filename='maingame.css')}}"> </style>
 <!--div id="__debug_marker__" style="background:yellow; padding:6px;">
   DEBUG MARKER: maingame.html from Flask
 </div-->
@@ -51,5 +52,6 @@
 </div>
 
 <script src="{{ url_for('static', filename='maingame.js')}}"> </script>
+
 
 {% endblock %}

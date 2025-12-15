@@ -1,0 +1,29 @@
+/* 按鈕基本質感 */
+.btn{
+  transition: transform .08s ease, filter .15s ease, opacity .15s ease;
+}
+
+/* 可按時 hover 高亮 */
+.btn:not(:disabled):hover{
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+/* 點下去的回饋 */
+.btn:not(:disabled):active{
+  transform: translateY(0px);
+  filter: brightness(1.05);
+}
+
+/* 不可用：灰掉 + 不能點 */
+.btn:disabled{
+  opacity: .45;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* log 換行顯示 */
+#logBox{
+  white-space: pre-line;
+}
