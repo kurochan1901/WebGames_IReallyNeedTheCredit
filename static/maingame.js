@@ -28,7 +28,7 @@ class Attacker {
             return null;
         }
         this.san -= 15;
-        return {key: "call_attendance", ame: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
+        return {key: "call_attendance", name: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
     }
 
     // 咖啡恢復
@@ -51,11 +51,11 @@ class Monster {
         this.health = 150;
     }
 
-    quiz() { return {name: "課堂小考", damage: 10};}
+    quiz() { return {name: "突發隨堂小考", damage: 10};}
 
-    lateClass() { return {name: "晚下課", damage: 15};}
+    lateClass() { return {name: "我把這邊講完就下課", damage: 15};}
 
-    selfLearn() { return {name: "剩下自學", damage: 0, stun: 2};}
+    selfLearn() { return {name: "這邊範圍回去自學", damage: 0, stun: 2};}
 }
 
 function battle() {
