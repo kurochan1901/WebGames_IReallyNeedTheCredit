@@ -35,6 +35,26 @@ def ensure_schema():
     con.commit()
     con.close()
 
+def ensure_schema(conn):
+    cur = conn.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS game_records (
+      record_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+      username   TEXT NOT NULL,
+      rounds     INTEGER NOT NULL CHECK (rounds >= 1),
+      winner     TEXT NOT NULL CHECK (winner IN ('player','monster')),
+      played_at  TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+    );
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_game_records_winner_playedat ON game_records(winner, played_at);")
+
+    conn.commit()
+
+
 @app.route("/")
 def home():
     #test db connection
@@ -117,6 +137,32 @@ def logout():
     session.clear()
     flash("已登出。", "ok")
     return redirect(url_for("home"))
+
+@app.post("/api/records")
+def api_add_record():
+    if "username" not in session:
+        return jsonify({"error": "未登入"}), 401
+    
+    data = request.get_json(silent=) or {}
+    rounds = data.get("rounds")
+    winner = data.get("winner")
+
+    if not isinstance(rounds, int) or rounds < 1:
+        return jsonify({"error": "invalid rounds"}), 400
+    if winner not in ["player", "monster"]:
+        return jsonify({"error": "invalid winner"}), 400
+    
+    username = session["username"]
+    conn = get_db()
+    conn.execute("PRAGMA foreign_keys = ON;")
+    conn.execute(
+        "INSERT INTO game_records (username, rounds, winner) VALUES (?,?,?)",
+        (username, rounds, winner),
+    )
+    conn.commit()
+
+    return jsonify({"ok": True})
+
 
 @app.route("/main_game")
 def main_game():
