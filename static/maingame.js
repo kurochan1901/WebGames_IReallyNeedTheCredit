@@ -16,7 +16,7 @@ class Attacker {
     // 做報告
     report() {
         if (this.san < 20 || (this.cooldowns["report"] > 0)) {
-            return null;  // 無法施放火球術
+            return null;
         }
         this.san -= 20;
         return {key: "report", name: "Report", damage: 25, sanCost: 20, cooldown: 2};
@@ -28,7 +28,7 @@ class Attacker {
             return null;
         }
         this.san -= 15;
-        return {key: "call_attendance", name: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
+        return {key: "call_attendance", name: "Take Attendance", damage: 20, sanCost: 15, cooldown: 1};
     }
 
     // 咖啡恢復
@@ -37,7 +37,7 @@ class Attacker {
             return null;
         }
         this.san -= 10;
-        return {key: "coffee", name: "Coffee", heal: 25, sanCost: 10, cooldown: 2};
+        return {key: "coffee", name: "Coffee", heal: 30, sanCost: 10, cooldown: 2};
     }
 
     restoreSan() {
@@ -51,9 +51,9 @@ class Monster {
         this.health = 150;
     }
 
-    quiz() { return {name: "突發隨堂小考", damage: 10};}
+    quiz() { return {name: "突發隨堂小考", damage: 10, sanAtt: 10};}
 
-    lateClass() { return {name: "我把這邊講完就下課", damage: 15};}
+    lateClass() { return {name: "我把這邊講完就下課", damage: 15, sanAtt: 15};}
 
     selfLearn() { return {name: "這邊範圍回去自學", damage: 0, stun: 2};}
 }
