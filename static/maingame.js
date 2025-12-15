@@ -3,41 +3,45 @@ class Attacker {
     constructor(name) {
         this.name = name;
         this.health = 100;
-        this.mana = 100;
+        this.san = 100;
         this.cooldowns = {};  // 冷卻時間
         this.stunDuration = 0;
     }
 
-    slash() {
-        return {name: "Slash", damage: 10, manaCost: 0, cooldown: 0};
+    // 基本攻擊（刷題
+    practice() {
+        return {name: "Practice", damage: 10, sanCost: 0, cooldown: 0};
     }
 
-    fireball() {
-        if (this.mana < 20 || (this.cooldowns["fireball"] > 0)) {
+    // 做報告
+    report() {
+        if (this.san < 20 || (this.cooldowns["report"] > 0)) {
             return null;  // 無法施放火球術
         }
-        this.mana -= 20;
-        return {name: "Fireball", damage: 25, manaCost: 20, cooldown: 2};
+        this.san -= 20;
+        return {name: "Report", damage: 25, sanCost: 20, cooldown: 2};
     }
     
-    powerStrike() {
-        if (this.mana < 15 || this.cooldowns["power_strike"] > 0) {
+    // 點名加分
+    callAttendance() {
+        if (this.san < 5 || this.cooldowns["call_attendance"] > 0) {
             return null;
         }
-        this.mana -= 15;
-        return {name: "Power Strike", damage: 15, manaCost: 15, cooldown: 1};
+        this.san -= 15;
+        return {name: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
     }
 
-    heal() {
-        if (this.mana < 10 || this.cooldowns["heal"] > 0) {
+    // 休息恢復
+    sleep() {
+        if (this.san < 10 || this.cooldowns["sleep"] > 0) {
             return null;
         }
-        this.mana -= 10;
-        return {name: "Heal", heal: 25, manaCost: 10, cooldown: 2};
+        this.san -= 10;
+        return {name: "Sleep", heal: 25, sanCost: 10, cooldown: 2};
     }
 
-    restoreMana() {
-        this.mana = Math.min(100, this.mana + 10);
+    restoresan() {
+        this.san = Math.min(100, this.san + 10);
     }
 }
 
@@ -104,24 +108,24 @@ function battle() {
 
     //按鈕lock
     function setButtonEnabled(enabled) {
-        $("slashBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["slash"] > 0);
-        $("fireballBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
-        $("strikeBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
-        $("healBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
+        $("practiceBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["practice"] > 0);
+        $("reportBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["report"] > 0) || attacker.san < 20;
+        $("callAttendanceBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["take_attendance"] > 0) || attacker.san < 15;
+        $("sleepBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["sleep"] > 0) || attacker.san < 10;
     }
 
     function render() {
         $("playerHP").textContent = attacker.health;
-        $("playerMP").textContent = attacker.mana;
+        $("playerSan").textContent = attacker.san;
         $("playerStun").textContent = attacker.stunDuration > 0 ? attacker.stunDuration : "無";
 
         $("monsterName").textContent = monster.name;
         $("monsterHP").textContent = monster.health;
 
-        $("slashBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["slash"] > 0);
-        $("fireballBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["fireball"] > 0) || attacker.mana < 20;
-        $("strikeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["power_strike"] > 0) || attacker.mana < 15;
-        $("healBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["heal"] > 0) || attacker.mana < 10;
+        $("practiceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["practice"] > 0);
+        $("reportBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["report"] > 0) || attacker.san < 20;
+        $("callAttendanceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["take_attendance"] > 0) || attacker.san < 15;
+        $("sleepBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["sleep"] > 0) || attacker.san < 10;
         }
 
     function endGame(winnerName) {
@@ -163,7 +167,7 @@ function battle() {
 
         //回合結算
         roundCount += 1;
-        attacker.restoreMana();
+        attacker.restoreSan();
         tickCooldowns();
 
         lines.push(`--- 第 ${roundCount} 回合 ---`);
@@ -227,12 +231,12 @@ function battle() {
     //啟動遊戲
     function startGame() {
         //debug
-        must('logBox');
-        must('nextLogBtn');
-        must('slashBtn');
-        must('fireballBtn');
-        must('strikeBtn');
-        must('healBtn');
+        // must('logBox');
+        // must('nextLogBtn');
+        // must('practiceBtn');
+        // must('reportBtn');
+        // must('callAttendanceBtn');
+        // must('sleepBtn');
         //debug end
 
         const playerName = 
@@ -251,10 +255,10 @@ function battle() {
             `戰鬥開始！${attacker.name}VS ${monster.name}`,`--- 第 ${roundCount} 回合 ---`]);
         render();
 
-        $("slashBtn").onclick = () => playerUse(() => attacker.slash());
-        $("fireballBtn").onclick = () => playerUse(() => attacker.fireball());
-        $("strikeBtn").onclick = () => playerUse(() => attacker.powerStrike());
-        $("healBtn").onclick = () => playerUse(() => attacker.heal());
+        $("practiceBtn").onclick = () => playerUse(() => attacker.practice());
+        $("reportBtn").onclick = () => playerUse(() => attacker.report());
+        $("callAttendanceBtn").onclick = () => playerUse(() => attacker.callAttendance());
+        $("sleepBtn").onclick = () => playerUse(() => attacker.sleep());
     }
 
     startGame();
