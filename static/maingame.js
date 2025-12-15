@@ -82,8 +82,12 @@ function battle() {
         // 讓 logBox 一次顯示多行（用 \n）
         $("logBox").textContent = lines.join("\n");
         $("nextLogBtn").style.display = "inline-block";
-        // 最後一段時，提示「繼續」比較像推進回合
-        $("nextLogBtn").textContent = blockQueue.length > 0 ? "下一段" : "繼續";
+
+        if (gameOver) {
+            $("nextLogBtn").textContent = "遊戲結束";
+        } else {
+            $("nextLogBtn").textContent = blockQueue.length > 0 ? "下一段" : "繼續";
+        }
     }
 
     function enqueueBlock(lines) {
@@ -98,13 +102,6 @@ function battle() {
         }
     
     }
-
-    function finishBlocksAndContinue() {
-        showingBlock = false;
-        $("nextLogBtn").style.display = "none";
-        beginPlayerTurn(); // 開始玩家回合(--測試: 進暈眩卡死?)
-    }
-
     $("nextLogBtn").onclick = () => {
         if (blockQueue.length > 0) {
             showBlock(blockQueue.shift());
@@ -112,6 +109,23 @@ function battle() {
             finishBlocksAndContinue();
         }
     };
+
+    function finishBlocksAndContinue() {
+        showingBlock = false;
+
+        // 若遊戲結束則回首頁
+        if (gameOver) {
+            $("nextLogBtn").style.display = "inline-block";
+            $("nextLogBtn").textContent = "遊戲結束";
+            $("nextLogBtn").onclick = goHome;
+            setButtonEnabled(false);
+            return;
+        }
+
+        // 若未結束則進下一回合
+        $("nextLogBtn").style.display = "none";
+        beginPlayerTurn();
+    }
 
 
     //按鈕lock
@@ -130,10 +144,8 @@ function battle() {
         $("monsterName").textContent = monster.name;
         $("monsterHP").textContent = monster.health;
 
-        $("practiceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["practice"] > 0);
-        $("reportBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["report"] > 0) || attacker.san < 20;
-        $("callAttendanceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["call_attendance"] > 0) || attacker.san < 15;
-        $("coffeeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["coffee"] > 0) || attacker.san < 10;
+        // 更新按鈕狀態
+        setButtonEnabled(!showingBlock);
         }
 
     function endGame(winnerName) {
@@ -183,6 +195,10 @@ function battle() {
                 }),
             }).catch(() => {});
         }
+    }
+
+    function goHome() {
+        window.location.href = "/";
     }
 
     //回合處理
