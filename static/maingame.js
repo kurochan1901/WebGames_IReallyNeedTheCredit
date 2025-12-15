@@ -10,7 +10,7 @@ class Attacker {
 
     // 基本攻擊（刷題
     practice() {
-        return {name: "Practice", damage: 10, sanCost: 0, cooldown: 0};
+        return {key: "practice", name: "Practice", damage: 10, sanCost: 0, cooldown: 0};
     }
 
     // 做報告
@@ -19,43 +19,43 @@ class Attacker {
             return null;  // 無法施放火球術
         }
         this.san -= 20;
-        return {name: "Report", damage: 25, sanCost: 20, cooldown: 2};
+        return {key: "report", name: "Report", damage: 25, sanCost: 20, cooldown: 2};
     }
     
     // 點名加分
     callAttendance() {
-        if (this.san < 5 || this.cooldowns["call_attendance"] > 0) {
+        if (this.san < 15 || this.cooldowns["call_attendance"] > 0) {
             return null;
         }
         this.san -= 15;
-        return {name: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
+        return {key: "call_attendance", ame: "Take Attendance", damage: 15, sanCost: 15, cooldown: 1};
     }
 
-    // 休息恢復
-    sleep() {
-        if (this.san < 10 || this.cooldowns["sleep"] > 0) {
+    // 咖啡恢復
+    coffee() {
+        if (this.san < 10 || this.cooldowns["coffee"] > 0) {
             return null;
         }
         this.san -= 10;
-        return {name: "Sleep", heal: 25, sanCost: 10, cooldown: 2};
+        return {key: "coffee", name: "Coffee", heal: 25, sanCost: 10, cooldown: 2};
     }
 
-    restoresan() {
+    restoreSan() {
         this.san = Math.min(100, this.san + 10);
     }
 }
 
 class Monster {
     constructor() {
-        this.name = "Wild Beast";
+        this.name = "Final Exam";
         this.health = 150;
     }
 
-    claw() { return {name: "Claw", damage: 10};}
+    quiz() { return {name: "課堂小考", damage: 10};}
 
-    bite() { return {name: "Bite", damage: 15};}
+    lateClass() { return {name: "晚下課", damage: 15};}
 
-    stun() { return {name: "Stun", damage: 0, stun: 2};}
+    selfLearn() { return {name: "剩下自學", damage: 0, stun: 2};}
 }
 
 function battle() {
@@ -110,8 +110,8 @@ function battle() {
     function setButtonEnabled(enabled) {
         $("practiceBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["practice"] > 0);
         $("reportBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["report"] > 0) || attacker.san < 20;
-        $("callAttendanceBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["take_attendance"] > 0) || attacker.san < 15;
-        $("sleepBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["sleep"] > 0) || attacker.san < 10;
+        $("callAttendanceBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["call_attendance"] > 0) || attacker.san < 15;
+        $("coffeeBtn").disabled = !enabled || gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["coffee"] > 0) || attacker.san < 10;
     }
 
     function render() {
@@ -124,33 +124,60 @@ function battle() {
 
         $("practiceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["practice"] > 0);
         $("reportBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["report"] > 0) || attacker.san < 20;
-        $("callAttendanceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["take_attendance"] > 0) || attacker.san < 15;
-        $("sleepBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["sleep"] > 0) || attacker.san < 10;
+        $("callAttendanceBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["call_attendance"] > 0) || attacker.san < 15;
+        $("coffeeBtn").disabled = gameOver || attacker.stunDuration > 0 || (attacker.cooldowns["coffee"] > 0) || attacker.san < 10;
         }
 
     function endGame(winnerName) {
         gameOver = true;
-        enqueue([`戰鬥結束！${winnerName} 勝利！`]);        
+
+        let lines = [];
+
+        if (winnerName === attacker.name) {
+            lines = [
+                "--- 好結局 ---",
+                "隨著最後一科考試結束的鐘聲響起，",
+                "你放下手中的筆，深深地嘆了一口氣：",
+                "「誰TM說要改成16週的...」",
+            ]
+
+        } else if (winnerName === monster.name) {
+            lines = [
+                "--- 壞結局 ---",
+                "當你看到成績單的那一刻，",
+                "你感受到前所未有的絕望：",
+                "「好課值得一修再修...」",
+            ]
+
+        } else {
+            lines = [
+                `戰鬥結束！${winnerName} 勝利！`
+            ];
+        }
+
+        enqueue(lines);
         render();
     }
 
     //回合處理
     function tickCooldowns() {
         for (const key of Object.keys(attacker.cooldowns)) {
-            if (attacker.cooldowns[key] > 1) attacker.cooldowns[key] -= 1;
-            else delete attacker.cooldowns[key];
+            attacker.cooldowns[key] -= 1;
+            if (attacker.cooldowns[key] <= 0) 
+                delete attacker.cooldowns[key];
         }
     }
 
     function monsterTurnCollect(lines) {
         if (gameOver) return;
 
-        const skills = [monster.claw(), monster.bite(), monster.stun()];
+        const skills = [monster.quiz(), monster.lateClass(), monster.selfLearn()];
         const monsterSkill = skills[Math.floor(Math.random() * skills.length)];
         lines.push(`${monster.name} 使用了 ${monsterSkill.name}！`);
         
         //怪物傷害
         if (monsterSkill.damage) {
+            if (typeof monsterSkill.damage === "number" && monsterSkill.damage > 0)
             attacker.health -= monsterSkill.damage;
             lines.push(`${attacker.name} 受到 ${monsterSkill.damage} 點傷害！`);
         }
@@ -163,6 +190,7 @@ function battle() {
 
         if (attacker.health <= 0) {
             endGame(monster.name);
+            return;
         }
 
         //回合結算
@@ -200,6 +228,7 @@ function battle() {
 
         //玩家傷害
         if (attackSkill.damage) {
+            if (typeof attackSkill.damage === "number" && attackSkill.damage > 0)
             monster.health -= attackSkill.damage;
             lines.push(`${attacker.name} 使用了 ${attackSkill.name}，造成 ${attackSkill.damage} 點傷害！`);
             if (monster.health <= 0) {
@@ -220,7 +249,7 @@ function battle() {
 
         //設置冷卻
         if (attackSkill.cooldown > 0) {
-            attacker.cooldowns[attackSkill.name.toLowerCase().replace(" ", "_")] = attackSkill.cooldown;
+            attacker.cooldowns[attackSkill.key] = attackSkill.cooldown;
         }
 
         monsterTurnCollect(lines);
@@ -236,7 +265,7 @@ function battle() {
         // must('practiceBtn');
         // must('reportBtn');
         // must('callAttendanceBtn');
-        // must('sleepBtn');
+        // must('coffeeBtn');
         //debug end
 
         const playerName = 
@@ -258,7 +287,7 @@ function battle() {
         $("practiceBtn").onclick = () => playerUse(() => attacker.practice());
         $("reportBtn").onclick = () => playerUse(() => attacker.report());
         $("callAttendanceBtn").onclick = () => playerUse(() => attacker.callAttendance());
-        $("sleepBtn").onclick = () => playerUse(() => attacker.sleep());
+        $("coffeeBtn").onclick = () => playerUse(() => attacker.coffee());
     }
 
     startGame();
