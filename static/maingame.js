@@ -103,11 +103,9 @@ function battle() {
     
     }
     $("nextLogBtn").onclick = () => {
-        if (blockQueue.length > 0) {
-            showBlock(blockQueue.shift());
-        } else {
-            finishBlocksAndContinue();
-        }
+        if (gameOver) return goHome();
+        if (blockQueue.length > 0) return showBlock(blockQueue.shift());
+        finishBlocksAndContinue();
     };
 
     function finishBlocksAndContinue() {
@@ -148,7 +146,7 @@ function battle() {
         setButtonEnabled(!showingBlock);
         }
 
-    function endGame(winnerName) {
+    function endGame(winnerName, extraLines=[]) {
         if (gameOver) return;
         gameOver = true;
 
@@ -158,10 +156,10 @@ function battle() {
         else if (winnerName === monster.name) winnerType = "monster";
 
         // 顯示結局訊息
-        let lines = [];
+        let ending = [];
 
         if (winnerName === attacker.name) {
-            lines = [
+            ending = [
                 "--- 好結局 ---",
                 "隨著最後一科考試結束的鐘聲響起，",
                 "你放下手中的筆，深深地嘆了一口氣：",
@@ -169,7 +167,7 @@ function battle() {
             ];
 
         } else if (winnerName === monster.name) {
-            lines = [
+            ending = [
                 "--- 壞結局 ---",
                 "當你看到成績單的那一刻，",
                 "你感受到前所未有的絕望：",
@@ -177,11 +175,13 @@ function battle() {
             ];
 
         } else {
-            lines = [`戰鬥結束！${winnerName} 勝利！`];
+            ending = [`戰鬥結束！${winnerName} 勝利！`];
         }
 
+        blockQueue = []; // 清空訊息區塊佇列
+
         // 顯示結局訊息區塊
-        enqueueBlock(lines);
+        enqueueBlock([...extraLines, ...ending]);
         render();
 
         // 送出戰績
@@ -231,8 +231,9 @@ function battle() {
             lines.push(`${attacker.name} 被眩暈了 ${monsterSkill.stun} 回合！`);
         }
 
+        //立即判定死亡
         if (attacker.health <= 0) {
-            endGame(monster.name);
+            endGame(monster.name, lines);
             return;
         }
 
@@ -240,8 +241,8 @@ function battle() {
         roundCount += 1;
         attacker.restoreSan();
         tickCooldowns();
+        lines.push(`--- 第 ${roundCount} 回合 ---`);       // 新回合開始訊息
 
-        lines.push(`--- 第 ${roundCount} 回合 ---`);
     }
 
     //開始玩家回合
