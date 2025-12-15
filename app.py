@@ -22,37 +22,41 @@ def get_db():
 
 def ensure_schema():
     con = get_db()
-    con.execute("""
-    CREATE TABLE IF NOT EXISTS players (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL
-        CHECK (length(username) BETWEEN 1 AND 30)
-        CHECK (username GLOB '[0-9A-Za-z]*'),
-      password TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-    """)
-    con.commit()
-    con.close()
+    try:
+        con.execute("PRAGMA foreign_keys = ON;")
 
-def ensure_schema(conn):
-    cur = conn.cursor()
-    cur.execute("PRAGMA foreign_keys = ON;")
+        # Players table
+        con.execute("""
+        CREATE TABLE IF NOT EXISTS players (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL
+                CHECK (length(username) BETWEEN 1 AND 30)
+                CHECK (username GLOB '[0-9A-Za-z]*'),
+            password TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        """)
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS game_records (
-      record_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-      username   TEXT NOT NULL,
-      rounds     INTEGER NOT NULL CHECK (rounds >= 1),
-      winner     TEXT NOT NULL CHECK (winner IN ('player','monster')),
-      played_at  TEXT NOT NULL DEFAULT (datetime('now')),
-      FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
-    );
-    """)
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_game_records_winner_playedat ON game_records(winner, played_at);")
+        # Game records table
+        con.execute("""
+        CREATE TABLE IF NOT EXISTS game_records (
+            record_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+            username   TEXT NOT NULL,
+            rounds     INTEGER NOT NULL CHECK (rounds >= 1),
+            winner     TEXT NOT NULL CHECK (winner IN ('player','monster')),
+            played_at  TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (username) REFERENCES players(username) ON DELETE CASCADE
+        );
+        """)
 
-    conn.commit()
+        # Index on game_records
+        con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
+        con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_played_at ON game_records(winner, played_at);")
+    
+        con.commit()
+    finally:
+        con.close()
+
 
 
 @app.route("/")
@@ -143,7 +147,7 @@ def api_add_record():
     if "username" not in session:
         return jsonify({"error": "未登入"}), 401
     
-    data = request.get_json(silent=) or {}
+    data = request.get_json(silent=True) or {}
     rounds = data.get("rounds")
     winner = data.get("winner")
 

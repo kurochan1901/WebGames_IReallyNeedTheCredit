@@ -137,8 +137,15 @@ function battle() {
         }
 
     function endGame(winnerName) {
+        if (gameOver) return;
         gameOver = true;
 
+        // 用 winnerName 推出 winnerType（要存進 DB 的欄位）
+        let winnerType = null; // 'player' or 'monster'
+        if (winnerName === attacker.name) winnerType = "player";
+        else if (winnerName === monster.name) winnerType = "monster";
+
+        // 顯示結局訊息
         let lines = [];
 
         if (winnerName === attacker.name) {
@@ -147,7 +154,7 @@ function battle() {
                 "隨著最後一科考試結束的鐘聲響起，",
                 "你放下手中的筆，深深地嘆了一口氣：",
                 "「誰TM說要改成16週的...」",
-            ]
+            ];
 
         } else if (winnerName === monster.name) {
             lines = [
@@ -155,16 +162,27 @@ function battle() {
                 "當你看到成績單的那一刻，",
                 "你感受到前所未有的絕望：",
                 "「好課值得一修再修...」",
-            ]
+            ];
 
         } else {
-            lines = [
-                `戰鬥結束！${winnerName} 勝利！`
-            ];
+            lines = [`戰鬥結束！${winnerName} 勝利！`];
         }
 
+        // 顯示結局訊息區塊
         enqueueBlock(lines);
         render();
+
+        // 送出戰績
+        if (winnerType) {
+            fetch("/api/records", {
+                method:"POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ 
+                    rounds: roundCount,
+                    winner: winnerType,
+                }),
+            }).catch(() => {});
+        }
     }
 
     //回合處理
