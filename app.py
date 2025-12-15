@@ -156,14 +156,16 @@ def api_add_record():
     if winner not in ["player", "monster"]:
         return jsonify({"error": "invalid winner"}), 400
     
-    username = session["username"]
-    conn = get_db()
-    conn.execute("PRAGMA foreign_keys = ON;")
-    conn.execute(
-        "INSERT INTO game_records (username, rounds, winner) VALUES (?,?,?)",
-        (username, rounds, winner),
-    )
-    conn.commit()
+    con = get_db()
+    try:
+        con.execute("PRAGMA foreign_keys = ON;")
+        con.execute(
+            "INSERT INTO game_records (username, rounds, winner) VALUES (?, ?, ?)",
+            (session["username"], rounds, winner)
+        )
+        con.commit()
+    finally:
+        con.close()
 
     return jsonify({"ok": True})
 
