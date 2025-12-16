@@ -221,6 +221,11 @@ def main_game():
         return redirect(url_for('login_form'))  # 若未登入，重定向至登入頁面
     return render_template('maingame.html')
 
+# mini_rush測試路由
+@app.get("/minigame/rush")
+def minigame_rush():
+    return render_template("minigame_rush.html")
+
 if __name__ == "__main__":
     ensure_schema()
     port = int(os.environ.get("PORT", 5000))

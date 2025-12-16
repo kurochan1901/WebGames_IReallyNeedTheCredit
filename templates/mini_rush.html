@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; padding: 16px;">
+    <h2>Mini Game: Rush（測試）</h2>
+    <div id="minigameMount"></div>
+</div>
+
+<script src="{{ url_for('static', filename='js/minigames_core.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rush.js') }}"></script>
+
+{% endblock %}
