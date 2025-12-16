@@ -10,10 +10,17 @@
 <script src="{{ url_for('static', filename='mini_rush.js') }}"></script>
 
 <script>
-    if (typeof window.startRushGame === "function") {
-        window.startRushGame(document.getElementById("minigameMount"));
+    const mountEl = document.getElementById("minigameMount");
+
+    if (window.MiniRush && typeof window.MiniRush.run === "function") {
+        window.MiniRush.run({
+            mountEl,
+            // 先測 UI 就好，先不要上傳
+            postUrl: null,
+            onFinish: (r) => console.log("rush result:", r),
+        });
     } else {
-        console.error("rush.js 沒有暴露 startRushGame(mountEl) 入口");
+        console.error("mini_rush.js 沒有暴露 window.MiniRush.run(opts)");
     }
 </script>
 

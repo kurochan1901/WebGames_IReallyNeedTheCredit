@@ -41,8 +41,8 @@
 
         function updateHUD() {
             const remain = Math.max(0, timeLimitMs - (C.nowMs() - start));
-            C.setText(".mg-timer", `${(remain / 1000).toFixed(1)}s`, mountEl);
-            C.setText(".mg-score", `Score: ${score}`, mountEl);
+            C.setText(mountEl, ".mg-timer", `${(remain / 1000).toFixed(1)}s`);
+            C.setText(mountEl, ".mg-score", `Score: ${score}`);
         }
 
         function spawnTarget() {
