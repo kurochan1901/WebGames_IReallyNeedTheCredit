@@ -4,6 +4,10 @@
 <!--div id="__debug_marker__" style="background:yellow; padding:6px;">
   DEBUG MARKER: maingame.html from Flask
 </div-->
+<script src="{{ url_for('static', filename='minigames_core.js') }}"></script>
+<script src="{{ url_for('static', filename='mini_quiz.js') }}"></script>
+<script src="{{ url_for('static', filename='mini_rush.js') }}"></script>
+<script src="{{ url_for('static', filename='minigames_registry.js') }}"></script>
 
 <div class="maingame-container">
   <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
