@@ -7,6 +7,14 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/minigames_core.js') }}"></script>
-<script src="{{ url_for('static', filename='js/rush.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mini_rush.js') }}"></script>
+
+<script>
+    if (typeof window.startRushGame === "function") {
+        window.startRushGame(document.getElementById("minigameMount"));
+    } else {
+        console.error("rush.js 沒有暴露 startRushGame(mountEl) 入口");
+    }
+</script>
 
 {% endblock %}

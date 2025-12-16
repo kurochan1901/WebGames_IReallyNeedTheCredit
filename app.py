@@ -224,9 +224,9 @@ def main_game():
 # mini_rush測試路由
 @app.get("/minigame/rush")
 def minigame_rush():
-    return render_template("minigame_rush.html")
+    return render_template("mini_rush.html")
 
 if __name__ == "__main__":
     ensure_schema()
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=False)
