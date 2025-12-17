@@ -10,7 +10,10 @@
 <script src="{{ url_for('static', filename='minigames_registry.js') }}"></script>
 
 <div class="maingame-container">
-  <h2>歡迎來到冒險之地，{{ session.get('username') }}！</h2>
+  <h2>
+    做得不錯啊，{{ session.get('username') }}！<br>
+    但你也只能止步於此了...
+  </h2>
   <!--debug-->
   <!-- p style="color:red;font-weight:bold;">[DEBUG] maingame.html UPDATED</p -->
 
