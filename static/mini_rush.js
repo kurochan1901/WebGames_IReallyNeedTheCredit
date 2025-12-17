@@ -97,7 +97,17 @@
             C.setText(mountEl,".mg-timer", "0.0s");
             C.setText(mountEl,".mg-score", `Score: ${score}`);
 
-            C.finishAndReport({ mountEl, game_mode: "rush", score, startMs: start, passScore, onFinish, postUrl, username });
+            C.finishAndReport({ 
+                mountEl, 
+                game_mode: "rush", 
+                score, 
+                startMs: start, 
+                passScore, 
+                onFinish, 
+                postUrl, 
+                username 
+            });
+
         }
 
         startBtn.onclick = () => {
@@ -113,7 +123,12 @@
             }, 100);
         };
 
-        quitBtn.onclick = () => stop();
+        quitBtn.onclick = () => {
+            if (!ended) {
+                stop();
+            }
+            window.location.href = "/";
+        };
 
         updateHUD();
         return { stop };

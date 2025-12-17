@@ -1,0 +1,85 @@
+.lb-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    text-align: center;
+}
+
+.lb-title {
+    margin: 0 0 8px 0;
+}
+
+.lb-desc {
+    margin: 0 0 14px 0;
+    opacity: 0.85;
+}
+
+.lb-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.20);
+    border: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 14px;
+}
+
+.lb-tab {
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.18);
+    color: inherit;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.lb-tab.is-active {
+    background: rgba(255,255,255,0.14);
+    opacity: 1;
+}
+
+.lb-table-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.lb-table {
+    width: 100%;
+    max-width: 860px;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.20);
+}
+
+.lb-table th,
+.lb-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+}
+
+.lb-table th {
+    font-weight: 800;
+    background: rgba(255,255,255,0.06);
+}
+
+.lb-muted {
+    opacity: 0.8;
+    padding: 18px 10px;
+}
+
+.lb-rank {
+    width: 70px;
+}
+
+.lb-user {
+    font-weight: 800;
+}
+
+.lb-actions {
+    margin-top: 16px;
+}

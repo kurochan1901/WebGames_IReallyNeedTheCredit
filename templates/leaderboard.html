@@ -1,11 +1,15 @@
 {% extends "base.html" %}
+
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='leaderboard.css') }}">
 
 <div class="container">
   <h2>排行榜</h2>
 
   <h3>最佳通關</h3>
   <p>成功戰勝期末考的勇者會名留青史</p>
+
+
   <table class="board">
     <thead>
       <tr>
@@ -17,7 +21,7 @@
       <tr>
         <td>{{ loop.index }}</td>
         <td>{{ r["username"] }}</td>
-        <td>{{ r["rounds"] }}</td>
+        <td>{{ r["rounds"] }}</td>+
         <td>{{ r["played_at"] }}</td>
       </tr>
       {% else %}
