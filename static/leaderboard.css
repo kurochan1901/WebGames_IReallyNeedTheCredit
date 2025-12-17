@@ -83,3 +83,7 @@
 .lb-actions {
     margin-top: 16px;
 }
+
+.is-hidden {
+    display: none !important;
+}
