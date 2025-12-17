@@ -1,4 +1,7 @@
 // 排行版 分頁形式 按分頁切換
+
+console.log("[leaderboard] loaded");        // debug
+
 (() => {
     "use strict";
 
