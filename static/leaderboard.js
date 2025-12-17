@@ -11,6 +11,11 @@ console.log("[leaderboard] loaded");        // debug
     const elTbody = document.getElementById("lbTbody");
     const tabs = Array.from(document.querySelectorAll(".lb-tab"));
 
+    const panelMain = document.getElementById("panel-main");
+    const panelMini = document.getElementById("panel-mini");
+
+
+
     function setActiveTab(mode) {
         for (const t of tabs) {
             const active = t.dataset.mode === mode;
@@ -106,6 +111,18 @@ console.log("[leaderboard] loaded");        // debug
         `).join("");
     }
 
+    // 控制排行榜顯示／隱藏
+    function switchPanel(mode) {
+        if (mode === "main") {
+            panelMain.classList.remove("is-hidden");
+            panelMini.classList.add("is-hidden");
+        } else {
+            panelMain.classList.add("is-hidden");
+            panelMini.classList.remove("is-hidden");
+        }
+    }
+
+
     // 主流程
     async function loadLeaderboard(mode) {
         setActiveTab(mode);
@@ -113,7 +130,9 @@ console.log("[leaderboard] loaded");        // debug
         if (mode === "main") {
             elTitle.textContent = "主遊戲排行榜";
             elDesc.textContent = "成功戰勝期末考的勇者會名留青史";
-        } else if (mode === "rush") {
+            return;
+        } 
+        if (mode === "rush") {
             elTitle.textContent = "Rush 排行榜";
             elDesc.textContent = "不是啊這也太快了吧";
         } else if (mode === "keys") {
@@ -125,11 +144,11 @@ console.log("[leaderboard] loaded");        // debug
         setLoading(mode);
 
         try {
-            const url = (mode === "main")
-                ? "/api/leaderboard"
-                : `/api/minigame_leaderboard?game_mode=${encodeURIComponent(mode)}`;
+            const res = await fetch (
+                `/api/minigame_leaderboard?game_mode=${encodeURIComponent(mode)}`,
+                { credentials: "include" }
+            )
 
-            const res = await fetch(url, { credentials: "include" });
             const data = await res.json();
             renderTbody(mode, data);
         } catch (e) {

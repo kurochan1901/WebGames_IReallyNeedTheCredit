@@ -2,7 +2,7 @@
 
 {% block content %}
 <div style="max-width: 900px; margin: 0 auto; padding: 16px;">
-    <h2>Mini Game: Key Smash Defense（Prototype）</h2>
+    <h2>Mini Game: Key Smash Defense</h2>
     <div id="minigameMount"></div>
 </div>
 
@@ -16,9 +16,9 @@
         window.MiniKeys.run({
             mountEl,
             // 正式上傳就打開
-            //postUrl: "/api/minigame_records",
+            postUrl: "/api/minigame_records",
             // 測試先用 null
-            postUrl: null,
+            //postUrl: null,
             onFinish: (r) => console.log("keys result:", r),
         });
     } else {
