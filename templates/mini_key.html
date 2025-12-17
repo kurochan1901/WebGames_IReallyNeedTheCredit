@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; padding: 16px;">
+    <h2>Mini Game: Key Smash Defense（Prototype）</h2>
+    <div id="minigameMount"></div>
+</div>
+
+<script src="{{ url_for('static', filename='minigames_core.js') }}"></script>
+<script src="{{ url_for('static', filename='mini_keys.js') }}"></script>
+
+<script>
+    const mountEl = document.getElementById("minigameMount");
+
+    if (window.MiniKeys && typeof window.MiniKeys.run === "function") {
+        window.MiniKeys.run({
+            mountEl,
+            // 正式上傳就打開
+            //postUrl: "/api/minigame_records",
+            // 測試先用 null
+            postUrl: null,
+            onFinish: (r) => console.log("keys result:", r),
+        });
+    } else {
+        console.error("mini_keys.js 沒有暴露 window.MiniKeys.run(opts)");
+    }
+</script>
+{% endblock %}
