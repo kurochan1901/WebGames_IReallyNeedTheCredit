@@ -195,6 +195,7 @@ def api_add_record():
 
     return jsonify({"ok": True})
 
+# 主遊戲排行榜資料
 @app.get("/leaderboard")
 def leaderboard():
     con = get_db()
@@ -263,6 +264,7 @@ def api_add_minigame_records():
     
     return jsonify({"ok": True})
 
+# 小遊戲排行榜資料
 @app.get("/api/minigame_leaderboard")
 def api_minigame_leaderboard():
     game_mode = (request.args.get("game_mode") or "").strip()
@@ -286,6 +288,43 @@ def api_minigame_leaderboard():
         """, (game_mode,)).fetchall()
 
         return jsonify([dict(r) for r in rows])
+    finally:
+        con.close()
+
+# render leaderboard.html 頁面骨架、tabs、table框
+@app.get("/api/leaderboard")
+def api_leaderboard():
+    con = get_db()
+    con.row_factory = sqlite3.Row
+    try:
+        rows = con.execute("""
+            SELECT 
+                username,
+                SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) AS wins,
+                COUNT(*) AS games,
+                ROUND(1.0 * SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) / COUNT(*), 3) AS win_rate,
+                ROUND(AVG(CASE WHEN winner='player' THEN rounds END), 2) AS avg_win_rounds,
+                MAX(played_at) AS last_played_at
+            FROM game_records
+            GROUP BY username
+            ORDER BY wins DESC, win_rate DESC, avg_win_rounds ASC, last_played_at DESC
+            LIMIT 50;
+        """).fetchall()
+
+        data = []
+        for r in rows:
+            win_rate = r["win_rate"]
+            data.append({
+                "username": r["username"],
+                "wins": r["wins"],
+                "games": r["games"],
+                # 前端直接顯示 win_rate 直接回字串
+                "win_rate": f"{(win_rate * 100):.1f}%" if win_rate is not None else "0.0%",
+                "avg_win_rounds": r["avg_win_rounds"] if r["avg_win_rounds"] is not None else "-",
+                "last_played_at": r["last_played_at"] or "",
+            })
+
+        return jsonify(data)
     finally:
         con.close()
 
