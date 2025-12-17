@@ -54,7 +54,7 @@ def ensure_schema():
         CREATE TABLE IF NOT EXISTS minigame_records (
             record_id   INTEGER PRIMARY KEY AUTOINCREMENT,
             username    TEXT NOT NULL,
-            game_mode   TEXT NOT NULL CHECK (game_mode IN ('rush', 'quiz')),
+            game_mode   TEXT NOT NULL CHECK (game_mode IN ('rush', 'keys')),
             score       INTEGER NOT NULL CHECK (score >= 0),
             duration_ms INTEGER NOT NULL CHECK (duration_ms >= 0),
             success     INTEGER NOT NULL CHECK (success IN (0, 1)),
@@ -238,9 +238,9 @@ def api_add_minigame_records():
 
     data = request.get_json(silent=True) or {}
 
-    # 兼容你的 core：可能是 game_code，也可能你之後改成 game_mode
+    # 兼容你的 core： game_mode
     game_mode = (data.get("game_mode") or "").strip()
-    if game_mode not in {"rush", "quiz"}:
+    if game_mode not in {"rush", "keys"}:
         return jsonify({"error": "Invalid game_mode"}), 400
     
     try:
@@ -268,7 +268,7 @@ def api_add_minigame_records():
 @app.get("/api/minigame_leaderboard")
 def api_minigame_leaderboard():
     game_mode = (request.args.get("game_mode") or "").strip()
-    if game_mode not in {"rush", "quiz"}:
+    if game_mode not in {"rush", "keys"}:
         return jsonify({"error": "Invalid game_mode"}), 400
     
     con = get_db()
@@ -334,10 +334,15 @@ def main_game():
         return redirect(url_for('login_form'))  # 若未登入，重定向至登入頁面
     return render_template('maingame.html')
 
-# mini_rush測試路由
+# mini_rush路由
 @app.get("/minigame/rush")
 def minigame_rush():
     return render_template("mini_rush.html")
+
+# mini_keys路由
+@app.get("/minigame/keys")
+def minigame_keys():
+    return render_template("mini_keys.html")
 
 if __name__ == "__main__":
     ensure_schema()

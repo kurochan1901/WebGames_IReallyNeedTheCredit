@@ -62,7 +62,7 @@ console.log("[leaderboard] loaded");        // debug
             return;
         }
 
-        // rush / quiz
+        // rush / keys
         elThead.innerHTML = `
             <tr>
                 <th class="lb-rank">#</th>
@@ -116,9 +116,9 @@ console.log("[leaderboard] loaded");        // debug
         } else if (mode === "rush") {
             elTitle.textContent = "Rush 排行榜";
             elDesc.textContent = "不是啊這也太快了吧";
-        } else {
-            elTitle.textContent = "Quiz 排行榜（預留）";
-            elDesc.textContent = "第二個小遊戲排行榜預留位置";
+        } else if (mode === "keys") {
+            elTitle.textContent = "Keys 排行榜";
+            elDesc.textContent = "你怎麼知道我打報告都不用看鍵盤";
         }
 
         renderThead(mode);
