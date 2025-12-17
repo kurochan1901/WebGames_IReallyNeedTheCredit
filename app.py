@@ -62,7 +62,7 @@ def ensure_schema():
             FOREIGN KEY (username) REFERENCES players(username) ON DELETE CASCADE
             );
         """)
-        
+
         # Index on game_records
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_played_at ON game_records(winner, played_at);")
@@ -194,6 +194,41 @@ def api_add_record():
         con.close()
 
     return jsonify({"ok": True})
+
+@app.post("/api/minigame_records")
+def api_add_minigame_records():
+    username = session.get("username")
+    if not username:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    # 兼容你的 core：可能是 game_code，也可能你之後改成 game_mode
+    game_mode = (data.get("game_mode") or "").strip()
+    if game_mode not in {"rush", "quiz"}:
+        return jsonify({"error": "Invalid game_mode"}), 400
+    
+    try:
+        score = int(data.get("score"))
+        duration_ms = int(data.get("duration_ms"))
+        success = 1 if bool(data.get("success")) else 0
+    except Exception:
+        return jsonify({"error": "Invalid payload types"}), 400
+    
+    con = get_db()
+    try:
+        # 確保表存在（如果你有 ensure_schema(con) 就呼叫它）
+
+        con.execute("""
+            INSERT INTO minigame_records (username, game_mode, score, duration_ms, success)
+            VALUES (?, ?, ?, ?, ?)
+        """, (username, game_mode, score, duration_ms, success))
+        con.commit()
+    finally:
+        con.close()
+    
+    return jsonify({"ok": True})
+
 
 @app.get("/leaderboard")
 def leaderboard():
