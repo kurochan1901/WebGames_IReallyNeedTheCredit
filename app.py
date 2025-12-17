@@ -195,6 +195,40 @@ def api_add_record():
 
     return jsonify({"ok": True})
 
+@app.get("/leaderboard")
+def leaderboard():
+    con = get_db()
+    try:
+        # 通關: 玩家勝利&最少回合數
+        best_wins = con.execute("""
+        SELECT username, rounds, played_at
+        FROM game_records
+        WHERE winner = 'player'
+        ORDER BY rounds ASC, played_at DESC
+        LIMIT 20;
+    """).fetchall()
+        
+        # 玩家總綁: 勝場/總場/勝率/平均勝利回合數
+        summary = con.execute("""
+        SELECT 
+            username,
+            SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) AS wins,
+            COUNT(*) AS games,
+            ROUND(1.0 * SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) / COUNT(*), 3) AS win_rate,
+            ROUND(AVG(CASE WHEN winner='player' THEN rounds END), 2) AS avg_win_rounds,
+            MAX(played_at) AS last_played_at
+        FROM game_records
+        GROUP BY username
+        ORDER BY wins DESC, win_rate DESC, avg_win_rounds ASC, last_played_at DESC
+        LIMIT 20;
+        """).fetchall()
+
+        return render_template("leaderboard.html",
+                               best_wins=best_wins,
+                               summary=summary)
+    finally:
+        con.close()
+
 @app.post("/api/minigame_records")
 def api_add_minigame_records():
     username = session.get("username")
@@ -229,38 +263,29 @@ def api_add_minigame_records():
     
     return jsonify({"ok": True})
 
-
-@app.get("/leaderboard")
-def leaderboard():
+@app.get("/api/minigame_leaderboard")
+def api_minigame_leaderboard():
+    game_mode = (request.args.get("game_mode") or "").strip()
+    if game_mode not in {"rush", "quiz"}:
+        return jsonify({"error": "Invalid game_mode"}), 400
+    
     con = get_db()
+    con.row_factory = sqlite3.Row
     try:
-        # 通關: 玩家勝利&最少回合數
-        best_wins = con.execute("""
-        SELECT username, rounds, played_at
-        FROM game_records
-        WHERE winner = 'player'
-        ORDER BY rounds ASC, played_at DESC
-        LIMIT 20;
-    """).fetchall()
-        
-        # 玩家總綁: 勝場/總場/勝率/平均勝利回合數
-        summary = con.execute("""
-        SELECT 
-            username,
-            SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) AS wins,
-            COUNT(*) AS games,
-            ROUND(1.0 * SUM(CASE WHEN winner='player' THEN 1 ELSE 0 END) / COUNT(*), 3) AS win_rate,
-            ROUND(AVG(CASE WHEN winner='player' THEN rounds END), 2) AS avg_win_rounds,
-            MAX(played_at) AS last_played_at
-        FROM game_records
-        GROUP BY username
-        ORDER BY wins DESC, win_rate DESC, avg_win_rounds ASC, last_played_at DESC
-        LIMIT 20;
-        """).fetchall()
+        rows = con.execute("""
+            SELECT
+                username,
+                MAX(score) AS best_score,
+                MIN(duration_ms) AS best_time_ms,
+                MAX(played_at) AS last_played_at
+            FROM minigame_records
+            WHERE game_mode = ?
+            GROUP BY username
+            ORDER BY best_score DESC, best_time_ms ASC, datetime(last_played_at) DESC
+            LIMIT 50
+        """, (game_mode,)).fetchall()
 
-        return render_template("leaderboard.html",
-                               best_wins=best_wins,
-                               summary=summary)
+        return jsonify([dict(r) for r in rows])
     finally:
         con.close()
 
