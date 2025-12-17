@@ -52,17 +52,17 @@ def ensure_schema():
         # Mini games records table
         con.execute("""
         CREATE TABLE IF NOT EXISTS minigame_records (
-            record_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-            username    TEXT NOT NULL,
-            game_mode   TEXT NOT NULL CHECK (game_mode IN ('rush', 'keys')),
-            score       INTEGER NOT NULL CHECK (score >= 0),
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            game_mode TEXT NOT NULL,
+            score INTEGER NOT NULL CHECK (score >= 0),
             duration_ms INTEGER NOT NULL CHECK (duration_ms >= 0),
-            success     INTEGER NOT NULL CHECK (success IN (0, 1)),
-            played_at   TEXT NOT NULL DEFAULT (datetime('now')),
+            success INTEGER NOT NULL CHECK (success IN (0,1)),
+            played_at TEXT NOT NULL DEFAULT (datetime('now')),
             FOREIGN KEY (username) REFERENCES players(username) ON DELETE CASCADE
-            );
+        );
         """)
-
+        
         # Index on game_records
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_played_at ON game_records(winner, played_at);")
