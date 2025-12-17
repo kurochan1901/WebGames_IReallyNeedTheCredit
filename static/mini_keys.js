@@ -34,7 +34,7 @@
         let idx = 0;
 
         // 每串時間限制（會變快）
-        let seqTimeMs = 2600;
+        let seqTimeMs = 4500;
         const seqTimeMinMs = 1400;
         const seqTimeStepMs = 120;
 
