@@ -236,7 +236,11 @@ def api_add_minigame_records():
     if not username:
         return jsonify({"error": "Not logged in"}), 401
 
-    data = request.get_json(silent=True) or {}
+    # debug
+    print("[minigame_records] content_type:", request.content_type)
+    print("[minigame_records] raw:", request.get_data(as_text=True))
+    data = request.get_json(silent=True)
+    print("[minigame_records] json:", data)
 
     # 兼容你的 core： game_mode
     game_mode = (data.get("game_mode") or "").strip()

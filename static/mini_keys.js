@@ -218,7 +218,7 @@
 
             C.finishAndReport({
                 mountEl,
-                game_code: "keys",
+                game_mode: "keys",
                 score,
                 startMs,
                 passScore,

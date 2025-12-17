@@ -1,164 +1,143 @@
 // 排行版 分頁形式 按分頁切換
-
-console.log("[leaderboard] loaded");        // debug
-
 (() => {
     "use strict";
 
-    const elTitle = document.getElementById("lbTitle");
-    const elDesc = document.getElementById("lbDesc");
-    const elThead = document.getElementById("lbThead");
-    const elTbody = document.getElementById("lbTbody");
-    const tabs = Array.from(document.querySelectorAll(".lb-tab"));
+    console.log("[leaderboard] loaded");
 
-    const panelMain = document.getElementById("panel-main");
-    const panelMini = document.getElementById("panel-mini");
+    document.addEventListener("DOMContentLoaded", () => {
+        const elTitle = document.getElementById("lbTitle");
+        const elDesc = document.getElementById("lbDesc");
 
+        // 控制排行榜分頁顯示主遊戲／小遊戲
+        const panelMain = document.getElementById("panel-main");
+        const panelMini = document.getElementById("panel-mini");
 
+        const elThead = document.getElementById("lbThead");
+        const elTbody = document.getElementById("lbTbody");
+        const tabs = Array.from(document.querySelectorAll(".lb-tab"));
 
-    function setActiveTab(mode) {
-        for (const t of tabs) {
-            const active = t.dataset.mode === mode;
-            t.classList.toggle("is-active", active);
-            t.setAttribute("aria-selected", active ? "true" : "false");
+        // 防呆
+        if (!elTitle || !elDesc || !panelMain || !panelMini || !elThead || !elTbody || tabs.length === 0) {
+            console.error("[leaderboard] missing elements", {
+                elTitle, elDesc, panelMain, panelMini, elThead, elTbody, tabs: tabs.length
+            });
+            return;
         }
-    }
 
-    function escapeHtml(s) {        // 防止破版
-        return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        }[c]));
-    }
+        function setActiveTab(mode) {
+            for (const t of tabs) {
+                const active = t.dataset.mode === mode;
+                t.classList.toggle("is-active", active);
+                t.setAttribute("aria-selected", active ? "true" : "false");
+            }
+        }
 
-    // 不同表格欄位數要跟著改變
-    function colCount(mode) {
-        return (mode === "main") ? 7 : 5;
-    }
+        function switchPanel(mode) {
+            const isMain = (mode === "main");
+            panelMain.classList.toggle("is-hidden", !isMain);
+            panelMini.classList.toggle("is-hidden", isMain);
 
-    function setLoading(mode) {
-        elTbody.innerHTML = `<tr><td class="lb-muted" colspan="${colCount(mode)}">載入中...</td></tr>`;
-    }
+            // debug：你切 tab 時 Console 應該看到這行
+            console.log("[leaderboard] switchPanel", mode, {
+                mainHidden: panelMain.classList.contains("is-hidden"),
+                miniHidden: panelMini.classList.contains("is-hidden")
+            });
+        }
 
-    function setEmpty(mode) {
-        elTbody.innerHTML = `<tr><td class="lb-muted" colspan="${colCount(mode)}">目前沒有資料</td></tr>`;
-    }
+        function escapeHtml(s) {
+            return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[c]));
+        }
 
-    function setError(mode) {
-        elTbody.innerHTML = `<tr><td class="lb-muted" colspan="${colCount(mode)}">載入失敗</td></tr>`;
-    }
+        function setLoading() {
+            elTbody.innerHTML = `<tr><td class="lb-muted" colspan="5">載入中...</td></tr>`;
+        }
 
-    function renderThead(mode) {        // 依照game mode產生不同表頭
-        if (mode === "main") {
+        function setEmpty() {
+            elTbody.innerHTML = `<tr><td class="lb-muted" colspan="5">目前沒有資料</td></tr>`;
+        }
+
+        function setError() {
+            elTbody.innerHTML = `<tr><td class="lb-muted" colspan="5">載入失敗</td></tr>`;
+        }
+
+        function renderMiniThead() {
             elThead.innerHTML = `
                 <tr>
                     <th class="lb-rank">#</th>
                     <th>玩家</th>
-                    <th>勝場</th>
-                    <th>總場</th>
-                    <th>勝率</th>
-                    <th>平均勝利回合</th>
-                    <th>最近遊玩</th>
+                    <th>Best Score</th>
+                    <th>Best Time (ms)</th>
+                    <th>Last Played</th>
                 </tr>
             `;
-            return;
         }
 
-        // rush / keys
-        elThead.innerHTML = `
-            <tr>
-                <th class="lb-rank">#</th>
-                <th>玩家</th>
-                <th>Best Score</th>
-                <th>Best Time (ms)</th>
-                <th>Last Played</th>
-            </tr>
-        `;
-    }
+        function renderMiniTbody(rows) {
+            if (!Array.isArray(rows) || rows.length === 0) {
+                setEmpty();
+                return;
+            }
 
-    function renderTbody(mode, rows) {
-        if (!Array.isArray(rows) || rows.length === 0) {
-            setEmpty(mode);
-            return;
-        }
-
-        if (mode === "main") {
             elTbody.innerHTML = rows.map((r, i) => `
                 <tr>
                     <td class="lb-rank">${i + 1}</td>
                     <td class="lb-user">${escapeHtml(r.username)}</td>
-                    <td>${r.wins ?? 0}</td>
-                    <td>${r.games ?? 0}</td>
-                    <td>${r.win_rate ?? ""}</td>
-                    <td>${r.avg_win_rounds ?? "-"}</td>
+                    <td>${r.best_score ?? 0}</td>
+                    <td>${r.best_time_ms ?? ""}</td>
                     <td>${escapeHtml(r.last_played_at ?? "")}</td>
                 </tr>
             `).join("");
-            return;
         }
 
-        elTbody.innerHTML = rows.map((r, i) => `
-            <tr>
-                <td class="lb-rank">${i + 1}</td>
-                <td class="lb-user">${escapeHtml(r.username)}</td>
-                <td>${r.best_score ?? 0}</td>
-                <td>${r.best_time_ms ?? ""}</td>
-                <td>${escapeHtml(r.last_played_at ?? "")}</td>
-            </tr>
-        `).join("");
-    }
+        async function loadMini(mode) {
+            renderMiniThead();
+            setLoading();
 
-    // 控制排行榜顯示／隱藏
-    function switchPanel(mode) {
-        if (mode === "main") {
-            panelMain.classList.remove("is-hidden");
-            panelMini.classList.add("is-hidden");
-        } else {
-            panelMain.classList.add("is-hidden");
-            panelMini.classList.remove("is-hidden");
-        }
-    }
-
-
-    // 主流程
-    async function loadLeaderboard(mode) {
-        setActiveTab(mode);
-
-        if (mode === "main") {
-            elTitle.textContent = "主遊戲排行榜";
-            elDesc.textContent = "成功戰勝期末考的勇者會名留青史";
-            return;
-        } 
-        if (mode === "rush") {
-            elTitle.textContent = "Rush 排行榜";
-            elDesc.textContent = "不是啊這也太快了吧";
-        } else if (mode === "keys") {
-            elTitle.textContent = "Keys 排行榜";
-            elDesc.textContent = "你怎麼知道我打報告都不用看鍵盤";
+            try {
+                const url = `/api/minigame_leaderboard?game_mode=${encodeURIComponent(mode)}`;
+                const res = await fetch(url, { credentials: "include" });
+                const data = await res.json();
+                renderMiniTbody(data);
+            } catch (e) {
+                console.error("[leaderboard] loadMini error", e);
+                setError();
+            }
         }
 
-        renderThead(mode);
-        setLoading(mode);
+        async function loadLeaderboard(mode) {
+            setActiveTab(mode);
+            switchPanel(mode);
 
-        try {
-            const res = await fetch (
-                `/api/minigame_leaderboard?game_mode=${encodeURIComponent(mode)}`,
-                { credentials: "include" }
-            )
+            if (mode === "main") {
+                elTitle.textContent = "主遊戲排行榜";
+                elDesc.textContent = "成功戰勝期末考的勇者會名留青史";
+                return; // ✅ 重要：主遊戲不 fetch 小遊戲表
+            }
 
-            const data = await res.json();
-            renderTbody(mode, data);
-        } catch (e) {
-            setError(mode);
+            if (mode === "rush") {
+                elTitle.textContent = "Rush 排行榜";
+                elDesc.textContent = "加退選衝刺：分數越高越強，同分比時間";
+            } else if (mode === "keys") {
+                elTitle.textContent = "Keys 排行榜";
+                elDesc.textContent = "Key Smash Defense：連擊越高越猛，同分比時間";
+            } else {
+                elTitle.textContent = "小遊戲排行榜";
+                elDesc.textContent = "";
+            }
+
+            await loadMini(mode);
         }
-    }
 
-    for (const t of tabs) {
-        t.addEventListener("click", () => loadLeaderboard(t.dataset.mode));
-    }
+        for (const t of tabs) {
+            t.addEventListener("click", () => loadLeaderboard(t.dataset.mode));
+        }
 
-    loadLeaderboard("main");
+        loadLeaderboard("main");
+    });
 })();
