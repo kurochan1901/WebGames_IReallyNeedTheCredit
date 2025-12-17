@@ -51,6 +51,7 @@
     function postResult(url, payload) {
         return fetch(url, {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         }).catch(() => {});
@@ -148,11 +149,11 @@
     }
 
     // 結束流程
-    function finishAndReport({ mountEl, game_code, score, startMs, passScore, onFinish, postUrl, username }) {
+    function finishAndReport({ mountEl, game_mode, score, startMs, passScore, onFinish, postUrl, username }) {
         const duration_ms = nowMs() - startMs;
         const success = score >= passScore;
 
-        const result = { game_code, score, duration_ms, success };
+        const result = { game_mode, score, duration_ms, success };
 
         if (postUrl) {
             postResult(postUrl, { username, ...result });

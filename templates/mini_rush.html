@@ -12,16 +12,11 @@
 <script>
     const mountEl = document.getElementById("minigameMount");
 
-    if (window.MiniRush && typeof window.MiniRush.run === "function") {
-        window.MiniRush.run({
-            mountEl,
-            // 先測 UI 就好，先不要上傳
-            postUrl: null,
-            onFinish: (r) => console.log("rush result:", r),
-        });
-    } else {
-        console.error("mini_rush.js 沒有暴露 window.MiniRush.run(opts)");
-    }
+    window.MiniRush.run({
+        mountEl,
+        postUrl: "/api/minigame_records",
+        onFinish: (r) => console.log("rush result:", r),
+    });
 </script>
 
 {% endblock %}

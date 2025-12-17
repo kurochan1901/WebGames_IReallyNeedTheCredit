@@ -94,10 +94,10 @@
             const success = score >= passScore;
             hint.textContent = success ? `🎉 搶課成功！Score ${score}` : `😵 搶課失敗… Score ${score}`;
 
-            C.setText(".mg-timer", "0.0s", mountEl);
-            C.setText(".mg-score", `Score: ${score}`, mountEl);
+            C.setText(mountEl,".mg-timer", "0.0s");
+            C.setText(mountEl,".mg-score", `Score: ${score}`);
 
-            C.finishAndReport({ mountEl, game_code: "rush", score, startMs: start, passScore, onFinish, postUrl, username });
+            C.finishAndReport({ mountEl, game_mode: "rush", score, startMs: start, passScore, onFinish, postUrl, username });
         }
 
         startBtn.onclick = () => {
