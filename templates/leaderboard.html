@@ -3,60 +3,30 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='leaderboard.css') }}">
 
-<div class="container">
-  <h2>排行榜</h2>
+<div class="lb-page container">
+    <h2 id="lbTitle" class="lb-title">排行榜</h2>
+    <p id="lbDesc" class="lb-desc">成功戰勝期末考的勇者會名留青史</p>
 
-  <h3>最佳通關</h3>
-  <p>成功戰勝期末考的勇者會名留青史</p>
+    <!-- Tabs -->
+    <div class="lb-tabs" role="tablist" aria-label="leaderboard tabs">
+        <button class="lb-tab is-active" data-mode="main" role="tab" aria-selected="true">主遊戲</button>
+        <button class="lb-tab" data-mode="rush" role="tab" aria-selected="false">Rush</button>
+        <button class="lb-tab" data-mode="quiz" role="tab" aria-selected="false">Quiz</button>
+    </div>
 
+    <!-- Table -->
+    <div class="lb-table-wrap">
+        <table class="lb-table">
+            <thead id="lbThead"></thead>
+            <tbody id="lbTbody">
+                <tr><td class="lb-muted" colspan="7">載入中...</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-  <table class="board">
-    <thead>
-      <tr>
-        <th>#</th><th>玩家</th><th>回合</th><th>時間</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in best_wins %}
-      <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ r["username"] }}</td>
-        <td>{{ r["rounds"] }}</td>+
-        <td>{{ r["played_at"] }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="4">目前還沒有玩家勝利紀錄</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <h3>玩家總榜（勝場/勝率/平均勝利回合）</h3>
-  <table class="board">
-    <thead>
-      <tr>
-        <th>#</th><th>玩家</th><th>勝場</th><th>總場</th><th>勝率</th><th>平均勝利回合</th><th>最近遊玩</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in summary %}
-      <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ r["username"] }}</td>
-        <td>{{ r["wins"] }}</td>
-        <td>{{ r["games"] }}</td>
-        <td>{{ (r["win_rate"] * 100) | round(1) }}%</td>
-        <td>{{ r["avg_win_rounds"] if r["avg_win_rounds"] is not none else "-" }}</td>
-        <td>{{ r["last_played_at"] }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="7">目前還沒有任何遊玩紀錄</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <p style="margin-top:16px;">
-    <a class="btn" href="{{ url_for('home') }}">回首頁</a>
-  </p>
+    <div class="lb-actions">
+        <a class="btn" href="{{ url_for('home') }}">回首頁</a>
+    </div>
 </div>
-
+    
 {% endblock %}
