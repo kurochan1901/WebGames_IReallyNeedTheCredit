@@ -62,7 +62,7 @@ def ensure_schema():
             FOREIGN KEY (username) REFERENCES players(username) ON DELETE CASCADE
         );
         """)
-        
+
         # Index on game_records
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_username ON game_records(username);")
         con.execute("CREATE INDEX IF NOT EXISTS idx_game_records_played_at ON game_records(winner, played_at);")
@@ -237,6 +237,7 @@ def api_add_minigame_records():
         return jsonify({"error": "Not logged in"}), 401
 
     # debug
+    print("session:", dict(session))
     print("[minigame_records] content_type:", request.content_type)
     print("[minigame_records] raw:", request.get_data(as_text=True))
     data = request.get_json(silent=True)

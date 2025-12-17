@@ -51,8 +51,8 @@
     function postResult(url, payload) {
         return fetch(url, {
             method: "POST",
-            credentials: "include",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify(payload),
         }).catch(() => {});
     }
