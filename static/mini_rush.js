@@ -13,7 +13,7 @@
             username = "player1",
         } = opts;
 
-        const ui = C.renderShell(mountEl, "搶課衝刺（Rush）", "限時點 ⭐ 越多越好；點到 💀 扣分。");
+        const ui = C.renderShell(mountEl, "欸欸你覺得這樣搶密碼卡會比Kahoot好嗎", "限時點 ⭐ 越多越好；點到 💀 扣分，超過12即過關。");
 
         let score = 0;
         let start = 0;

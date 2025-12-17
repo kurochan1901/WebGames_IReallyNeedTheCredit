@@ -67,13 +67,18 @@ header.nav a, .nav button {
     justify-content: center;
 }
 
-/* 主視覺圖片預留區 */
+/* 主視覺圖片 */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;          /* 上下留空，避免擠壓按鈕 */
+}
+
 .hero-image-placeholder {
-    width: 520px;
-    height: 300px;
-    background: #2A262B;
-    border: 2px solid #5A4A2A;
-    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    height: auto;
     color: #C9A86A;
     font-size: 22px;
     text-align: center;
@@ -83,8 +88,10 @@ header.nav a, .nav button {
     margin-bottom: 40px;
 }
 
-.hero-image{
-
+.hero-image-placeholder img {
+    width: 100%;
+    height: auto;      
+    display: block;
 }
 
 /* 按鈕區 */
